@@ -14,7 +14,7 @@ class Apicultor{
     }
 
     mostrar(){
-    image(this.img, this.x - 15, this.y);
+    image(this.img, this.x - 15, this.y + 25);
 noFill();
     stroke("red");
     rect(this.x, this.y, this.largura, this.altura);

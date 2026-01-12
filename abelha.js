@@ -1,100 +1,55 @@
-class Abelha {
-    constructor (x, y, tamanho, altura, largura, velX, velY, img, topoPlat){
-        this.x = x;
-        this.y = y;
-        this.tamanho = tamanho;
-        this.altura = altura;
-        this.largura = largura;
-        this.img = img;
-        this.status = 0;
-        this.impulso = -(velY * 2);
-        this.velX = velX;
-        this.velY = velY;
-        this.gravidade = 0.5;
-        this.sentido = 0; //cima
-        this.topoPlat = topoPlat;
-        
-        this.img.resize(0, this.img.height * 0.6);
-    }
+class Abelha extends Base {
+  constructor(x, y, tamanho, velX, velY, img, topoPlat) {
+    const largura = img.width * tamanho;
+    const altura  = img.height * tamanho;
 
-mostrar() {
-    image(this.img, this.x - 15, this.y);
+    super(x, y, altura, largura, img);
+
+    this.tamanho = tamanho;
+    this.velX = velX;
+    this.velY = velY;
+    this.gravidade = 0.5;
+    this.impulso = -(velY * 2);
+    this.topoPlat = topoPlat;
+
+    // caixa de colisao proporcional ao personagem
+    this.hitboxOffsetX = largura * 0.1;
+    this.hitboxOffsetY = altura * 0.1;
+    this.hitboxWidth  = largura * 0.8;
+    this.hitboxHeight = altura * 0.8;
+  }
+
+  mostrar() {
+    image(this.img, this.x - 15, this.y, this.largura, this.altura);
     noFill();
     stroke("red");
-    rect(this.x, this.y, this.largura, this.altura);
-}
-
-
-moverHorizontal(){
-
-    this.x += this.velX;
-}
-
-gravidadeAbelha(){
-  
-  
-
-}
-
-colidiu(npc){
-  return (
-    /*
-    this.x + this.largura < npc.x ||        //lado esquerdo
-    this.x > npc.x + npc.largura ||         //lado direitw
-    this.y + this.altura < npc.y ||         // em cima
-    this.y > npc.y + npc.altura  
-    */           //  abaixo 
-
-    this.x + this.largura > npc.x && 
-    this.y + this.altura > npc.y && 
-    this.y < npc.y + npc.altura &&
-    this.x < npc.x + npc.largura 
-  );
-}
-
-
-moverVertical(){
-  this.velY += this.gravidade;
-  this.y += this.velY;
- 
-  if (keyIsDown(UP_ARROW)) {
-    this.y += this.impulso;
-    this.velY = 0;
+    rect(this.x + this.hitboxOffsetX, this.y + this.hitboxOffsetY, this.hitboxWidth, this.hitboxHeight);
   }
-   if (this.y < 0) {
-    this.y = 0;
-    this.velY = 0;
+
+  moverHorizontal() {
+    if (keyIsDown(RIGHT_ARROW)) this.x += this.velX;
+    if (keyIsDown(LEFT_ARROW)) this.x -= this.velX;
+    this.x = constrain(this.x, 0, width - this.largura);
+  }
+
+  moverVertical() {
+    this.velY += this.gravidade;
+    this.y += this.velY;
+
+    if (keyIsDown(UP_ARROW)) this.velY = this.impulso; // pulo
+    this.y = constrain(this.y, 0, this.topoPlat - this.altura);
+  }
+
+  colidiu(npc) {
+    return (
+      this.x + this.largura > npc.x &&
+      this.y + this.altura > npc.y &&
+      this.y < npc.y + npc.altura &&
+      this.x < npc.x + npc.largura
+    );
+  }
+
+  caiu() {
+    return this.y >= this.topoPlat - this.altura;
   }
 }
-
-caiu(){
-  return this.y > this.topoPlat - this.altura;
-}
-
-
-};
-
-
-
-
-
-
-
-// function caiuAbelha(){
-//   abelha.y < (height - plataforma.height);
-//   abelhaCaiu = true;
-
-// }
-
-//direita
-  // if (keyIsDown(RIGHT_ARROW)) {
-    //this.x += this.vel;
-
- //esquerda
-  //if (keyIsDown(LEFT_ARROW)) {
-    //this.x -= this.vel;
- // }
-
- //gravidade - ok
- //colisão com os objetos
- //não ultrapassar a tela superior - ok

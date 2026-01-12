@@ -16,7 +16,7 @@ class Sol{
   
   drawingContext.shadowBlur = 40;      //efeito fechaçao pro nosso sol
   drawingContext.shadowColor = "yellow"; //o 1 muda a intensidade e o 2 a cor
-  image(this.img, this.x - 15, this.y);
+  image(this.img, this.x - 15, this.y );
 
   pop();
 }

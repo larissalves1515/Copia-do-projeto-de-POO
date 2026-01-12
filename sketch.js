@@ -31,7 +31,6 @@ function setup() {
   // Adicionar a velocidade vertical e manter a horizontal
   // Adicionar a gravidade
   
-  
  
   let alturaFlor = imgFlor.height * 0.18;
   florInimigo = new Flor(700, topoPlat - alturaFlor, alturaFlor, 100, imgFlor, 2);
@@ -42,9 +41,10 @@ function setup() {
   let alturaHomem = imgHomem.height * 0.6;
   homem = new Homem(1500, topoPlat - alturaHomem, 500, 60, 70, 2, imgHomem);
 
-  sol = new Sol(1100, 50, 500, 200, 150, imgSol);
+  sol = new Sol(1100, 50, 300, 150, 100, imgSol);
 
-  abelha = new Abelha(100, 100, 30, 40, 40, 2, 5, imgBel, topoPlat);
+  abelha = new Abelha(50, 100, 0.5, 4, 10, imgBel, topoPlat);
+
   npcs = [florInimigo, apicultor, homem, new Flor(2000, topoPlat - alturaFlor, alturaFlor, 100, imgFlor, 2)];
  
   let x = -800;
@@ -52,21 +52,64 @@ function setup() {
   while (x < windowWidth * 10) {
   plataformas.push(new Plataforma(x, topoPlat, 1, imgPlat.height, larguraPlat, imgPlat));
   x += larguraPlat;
-
-  
-}
-
+  }
   }
 
+  
+function draw() {
+  background("rgba(123, 204, 255, 1)");
 
+  abelha.moverHorizontal();
+  abelha.moverVertical();
+  abelhaCaiu = abelha.caiu();
+
+  // atualizaçao da camera
+  cameraX = -abelha.x + 120;
+
+  push();
+  translate(cameraX, 0);
+
+  // chao
+  for (let plat of plataformas) {
+    plat.mostrar();
+    line(0, windowHeight - 1, width, height - 1);
+  }
+
+  // desenhando cada personagem
+  for (let i = npcs.length - 1; i >= 0; i--) {
+    let npc = npcs[i];
+    npc.mostrar();
+    if (abelha.colidiu(npc)) npcs.splice(i, 1);
+  }
+
+  sol.mostrar();
+  abelha.mostrar();
+
+  pop();
+
+  // plaquinha
+  desenharMostrador(10, height - 100);
+}
+
+
+
+/*
 function draw() {
   background("rgba(123, 204, 255, 1)");
   push();
   translate(cameraX, 0); //usamos o translate para que tudo apos ele seja deslocado junto a nossa camera
-  
+  abelha.mostrar();
   abelha.moverHorizontal();
   abelha.moverVertical();
   abelhaCaiu = abelha.caiu();
+
+  
+  for (let plat of plataformas) {
+    plat.mostrar();
+   
+    line(0, windowHeight - 1, width, height - 1);
+  }
+
   for(let i = npcs.length - 1; i >= 0; i--){
     let npc = npcs[i];
 
@@ -79,22 +122,19 @@ function draw() {
   }
 
   cameraX = -abelha.x + 120;
-  abelha.gravidadeAbelha();
+ // abelha.gravidadeAbelha();
+
+
 
   sol.mostrar();
   
 
-  for (let plat of plataformas) {
-    plat.mostrar();
-   
-    line(0, windowHeight - 1, width, height - 1);
-  }
-  abelha.mostrar();
+  
   pop();
   desenharMostrador(10, height - 100);
   
 }
-
+*/
 function desenharMostrador(x, y) {
   textSize(14)
   text(`Colidiu com flor: ${colFlor}`, x, y);
@@ -111,7 +151,6 @@ function desenharMostrador(x, y) {
 /* IMPORTANTE
 Se:
 topoPlat = windowHeight - alturaPlat   // topo da imagem da plataforma
-
 
 e se a borda decorativa tem bordaDecorativa px contados do topo para baixo,
 então:
