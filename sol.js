@@ -9,7 +9,7 @@ class Sol extends Base {
     push();
     
     // Efeito de brilho
-    drawingContext.shadowBlur = 40;
+    drawingContext.shadowBlur = 15;
     drawingContext.shadowColor = "yellow";
     
     // Desenha o sol na posição atual (com parallax)
