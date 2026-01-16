@@ -5,26 +5,20 @@ class Homem extends Base {
     this.vel = vel;
     this.img.resize(0, this.img.height * 0.6);
   }
+mostrar() {
+  const margemX = 45; // diminui dos lados
+  const margemY = 35; // diminui em cima e embaixo
 
-  mostrar() {
-    // Desenha o homem na posição atual (que se move com o mundo)
-    image(this.img, this.x - 15, this.y + 25);
-    
-    // Hitbox (opcional - para debug)
-    noFill();
-    stroke("red");
-    rect(this.x, this.y, this.largura, this.altura);
-  }
+  image(this.img, this.x - 15, this.y + 25);
+
+  noFill();
+  stroke("red");
+  rect(
+    this.x - 15 + margemX / 2,
+    this.y + 25 + margemY / 2,
+    this.img.width - margemX,
+    this.img.height - margemY
+  );
+}
 }
 
-
-
-
-
-
-
-
-
-
-
-  

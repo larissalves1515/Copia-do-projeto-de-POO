@@ -9,7 +9,8 @@ class Abelha extends Base {
     this.velX = velX;
     this.velY = velY;
     this.gravidade = 0.5;
-    this.impulso = -(velY * 2);
+  
+
     this.topoPlat = topoPlat;
 
   
@@ -24,27 +25,28 @@ class Abelha extends Base {
     noFill();
     stroke("red");
     rect(this.x + this.hitboxOffsetX, this.y + this.hitboxOffsetY, this.hitboxWidth, this.hitboxHeight);
-  }
+   }
 
 
 moverVertical() {
-
+  // gravidade sempre atua
   this.velY += this.gravidade;
 
-  if (keyIsDown(UP_ARROW)) {
-    this.velY = this.impulso;
-  }
-
-
+  // limite de velocidade (queda forte)
   this.velY = constrain(this.velY, -7, 9);
 
   this.y += this.velY;
 
+  // não sair da tela por cima
   if (this.y < 0) {
     this.y = 0;
     this.velY = 0;
   }
 }
+pular() {
+  this.velY = -12; 
+}
+
 
 
 
@@ -61,4 +63,3 @@ caiu() {
   return this.y > height;
 }
 }
-

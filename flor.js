@@ -6,13 +6,18 @@ class Flor extends Base {
   }
 
   mostrar() {
-    // Desenha a flor na posição atual (que se move com o mundo)
-    image(this.img, this.x - 15, this.y + 17);
-    
-    // Hitbox (opcional - para debug)
-    noFill();
-    stroke("red");
-    rect(this.x, this.y, this.largura, this.altura);
-  }
-}
+  const margemX = 60; // diminui dos lados
+  const margemY = 35; // diminui em cima e embaixo
 
+  image(this.img, this.x - 15, this.y + 25);
+
+  noFill();
+  stroke("red");
+  rect(
+    this.x - 15 + margemX / 2,
+    this.y + 25 + margemY / 2,
+    this.img.width - margemX,
+    this.img.height - margemY
+  );
+}
+}
