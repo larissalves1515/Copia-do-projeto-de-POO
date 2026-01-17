@@ -74,15 +74,32 @@ function inicializarJogo() {
     florInimigo,
     apicultor,
     homem,
+    
+    // ========== NPCs ADICIONAIS ESTRATEGICAMENTE ESPALHADOS ==========
+    // Primeira área (depois do início, com espaço para respirar)
     new Flor(2000, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
-    new Flor(3000, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
-    new Apicultor(3500, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
-    new Homem(4000, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
-    // MAIS OBSTÁCULOS PERTO DA ÁRVORE - CHALLENGE FINAL!
+    
+    // Segunda área (após um bom espaço)
+    new Apicultor(2500, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
+    
+    // Terceira área (um pouco mais adiante)
+    new Homem(3000, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
+    
+    // Quarta área (dois obstáculos próximos para desafio)
+    new Flor(3200, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
+    new Apicultor(3400, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
+    
+    // Quinta área (após espaço para recuperação)
+    new Homem(3800, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
+    
+    // Sexta área (pré-árvore - desafio final moderado)
     new Flor(4200, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
     new Apicultor(4400, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
     new Homem(4600, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
+    
+    // Últimos obstáculos antes da árvore
     new Flor(4800, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
+    
     arvore // Adiciona a árvore aos NPCs (última posição)
   ];
 
