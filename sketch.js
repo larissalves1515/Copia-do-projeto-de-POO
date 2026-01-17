@@ -1,4 +1,4 @@
-let velocidadeMundo = 4;
+let velocidadeMundo = 5;
 let abelha, florInimigo, apicultor, homem, sol;
 let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial;
 let plataformas = [];
@@ -261,16 +261,17 @@ function telaGameOver() {
   // Desenha a imagem
   image(imgGameOver, width / 2, height / 2 - 50, imgWidth, imgHeight);
   
-  // Botão de reiniciar
+  // Botão de reiniciar (MAIS PARA BAIXO - 0.85)
   drawBotaoReiniciar();
   
   // Volta ao modo normal
   imageMode(CORNER);
 }
 
+
 function drawBotaoReiniciar() {
   let btnX = width / 2;
-  let btnY = height * 0.85;
+  let btnY = height * 0.85; // MAIS PARA BAIXO (era 0.75)
   let btnWidth = 200;
   let btnHeight = 50;
   
@@ -297,11 +298,12 @@ function drawBotaoReiniciar() {
   rectMode(CORNER);
 }
 
+
 // ==================== CONTROLE DE CLIQUE DO MOUSE ====================
 function mousePressed() {
   if (estadoJogo === "inicial") {
     let btnX = width / 2;
-    let btnY = height * 0.75; // MESMA POSIÇÃO QUE NO drawBotaoIniciarPequeno
+    let btnY = height * 0.75; // Botão INICIAR
     let btnWidth = 220;
     let btnHeight = 55;
     
@@ -313,7 +315,7 @@ function mousePressed() {
     }
   } else if (estadoJogo === "gameover") {
     let btnX = width / 2;
-    let btnY = height * 0.75;
+    let btnY = height * 0.85; // Botão JOGAR NOVAMENTE (CORRIGIDO!)
     let btnWidth = 200;
     let btnHeight = 50;
     
