@@ -1,6 +1,6 @@
 let velocidadeMundo = 5;
-let abelha, florInimigo, apicultor, homem, sol;
-let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial;
+let abelha, florInimigo, apicultor, homem, sol, arvore;
+let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial, imgArvore, imgParabens;
 let plataformas = [];
 let larguraPlat = 1536;
 let alturaPlat = 198;
@@ -11,6 +11,7 @@ let maxVidas = 3;
 let invencivel = false;
 let tempoInvencivel = 0;
 let estadoJogo = "inicial";
+let jogoGanho = false; // Nova variável para controlar vitória
 
 let colFlor = false, colApicultor = false, colHomem = false, abelhaCaiu = false;
 
@@ -28,6 +29,8 @@ function preload() {
   imgPlat = loadImage("img/plataforma.png");
   imgGameOver = loadImage("img/gameoverorigin.png");
   imgTelaInicial = loadImage("img/belbee.png");
+  imgArvore = loadImage("img/arvore.png"); // Nova imagem
+  imgParabens = loadImage("img/parabens.png"); // Nova imagem de parabéns
 }
 
 function setup() {
@@ -39,23 +42,30 @@ function setup() {
 
 function inicializarJogo() {
   let topoPlat = height - imgPlat.height;
+  jogoGanho = false; // Reseta estado de vitória
 
   // ========== TAMANHOS FIXOS PARA OS NPCS ==========
   // Alturas em pixels (valores fixos, não porcentagens!)
   let alturaFlor = 250; // 120 pixels de altura
   let alturaApi = 220;  // 150 pixels de altura
   let alturaHomem = 220; // 150 pixels de altura
+  let alturaArvore = 450; // Árvore maior que os outros
   
   // Larguras proporcionais mantendo a proporção original
   let larguraFlor = alturaFlor * (imgFlor.width / imgFlor.height);
   let larguraApi = alturaApi * (imgApi.width / imgApi.height);
   let larguraHomem = alturaHomem * (imgHomem.width / imgHomem.height);
+  let larguraArvore = alturaArvore * (imgArvore.width / imgArvore.height);
   // =================================================
 
   // Criação dos NPCs com tamanhos consistentes
   florInimigo = new Flor(700, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2);
   apicultor = new Apicultor(1000, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi);
   homem = new Homem(1500, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem);
+  
+  // ÁRVORE - IMPORTANTE: Use a classe Arvore, não Flor!
+  // Posição inicial bem distante (ajuste conforme necessário)
+  arvore = new Arvore(5000, topoPlat - alturaArvore + 50, 1, alturaArvore, larguraArvore, imgArvore);
 
   sol = new Sol(1100, 50, 300, 150, 150, imgSol);
   abelha = new Abelha(120, 100, 0.5, 0, 10, imgBel, topoPlat);
@@ -64,7 +74,16 @@ function inicializarJogo() {
     florInimigo,
     apicultor,
     homem,
-    new Flor(2000, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2)
+    new Flor(2000, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
+    new Flor(3000, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
+    new Apicultor(3500, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
+    new Homem(4000, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
+    // MAIS OBSTÁCULOS PERTO DA ÁRVORE - CHALLENGE FINAL!
+    new Flor(4200, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
+    new Apicultor(4400, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
+    new Homem(4600, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
+    new Flor(4800, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
+    arvore // Adiciona a árvore aos NPCs (última posição)
   ];
 
   let x = -800;
@@ -86,6 +105,9 @@ function draw() {
   } else if (estadoJogo === "gameover") {
     telaGameOver();
     return;
+  } else if (estadoJogo === "vitoria") {
+    telaVitoria();
+    return;
   }
 
   // JOGO EM ANDAMENTO
@@ -94,6 +116,11 @@ function draw() {
 
   abelha.moverVertical();
   abelhaCaiu = abelha.caiu();
+
+  // Se a abelha caiu, game over
+  if (abelhaCaiu && !jogoGanho) {
+    vidas = 0;
+  }
 
   // plataformas
   for (let plat of plataformas) {
@@ -110,7 +137,15 @@ function draw() {
     npc.x -= velocidadeMundo;
     npc.mostrar();
 
-    if (abelha.colidiu(npc) && !invencivel) {
+    // Verifica colisão com a árvore (vitória)
+    if (npc === arvore && abelha.colidiu(npc)) {
+      jogoGanho = true;
+      estadoJogo = "vitoria";
+      return; // Sai da função draw para mostrar tela de vitória
+    }
+    
+    // Verifica colisão com inimigos (apenas se não ganhou ainda)
+    if (!jogoGanho && abelha.colidiu(npc) && !invencivel && npc !== arvore) {
       vidas--;
       invencivel = true;
       tempoInvencivel = frameCount;
@@ -129,15 +164,96 @@ function draw() {
 
   abelha.mostrar();
   
-  //aqui é os ajustes da posição dos corações
+  // Mostra vidas
   for (let i = 0; i < maxVidas; i++) {
     let cheio = i < vidas;
     desenharCoracao(40 + i * 50, 50, 0.6, cheio);
   }
   
-  if (vidas <= 0) {
+  if (vidas <= 0 && !jogoGanho) {
     estadoJogo = "gameover";
   }
+}
+
+// ==================== TELA DE VITÓRIA ATUALIZADA ====================
+function telaVitoria() {
+  // Fundo azul simples (sem efeitos de confete)
+  background("rgba(123, 204, 255, 1)");
+  
+  // Centraliza tudo
+  imageMode(CENTER);
+  textAlign(CENTER, CENTER);
+  
+  // ========== IMAGEM DA ÁRVORE NO CENTRO (MAIS PARA CIMA) ==========
+  let arvoreWidth = imgArvore.width * 0.25; // 25% do tamanho original (menor)
+  let arvoreHeight = imgArvore.height * 0.25;
+  
+  let centroX = width / 2;
+  let arvoreY = height / 2 - 100; // MAIS PARA CIMA (era -50)
+  
+  // Desenha a ÁRVORE no centro
+  image(imgArvore, centroX, arvoreY, arvoreWidth, arvoreHeight);
+  
+  // ========== IMAGEM "PARABENS.PNG" EMBAIXO DA ÁRVORE COM ESPAÇO ==========
+  if (imgParabens) {
+    let parabensWidth = imgParabens.width * 0.3; // 30% do tamanho original
+    let parabensHeight = imgParabens.height * 0.3;
+    let parabensY = arvoreY + arvoreHeight/2 + 50; // MAIS ESPAÇO (era +20)
+    
+    // Desenha a imagem de parabéns
+    image(imgParabens, centroX, parabensY, parabensWidth, parabensHeight);
+    
+    // ========== TEXTO ADICIONAL COM MAIS ESPAÇO ==========
+    noStroke();
+    fill(255);
+    textSize(24);
+    text("A abelha chegou no seu lar!", centroX, parabensY + parabensHeight/2 + 50); // MAIS ESPAÇO
+  } else {
+    // Fallback caso a imagem não exista (mantém o texto antigo)
+    fill(255, 215, 0); // Cor dourada
+    stroke(0);
+    strokeWeight(3);
+    textSize(48);
+    let parabensY = arvoreY + arvoreHeight/2 + 50;
+    text("PARABÉNS!", centroX, parabensY);
+    
+    noStroke();
+    fill(255);
+    textSize(24);
+    text("A abelha chegou no seu lar!", centroX, parabensY + 80); // MAIS ESPAÇO
+  }
+  
+  // Botão para jogar novamente
+  drawBotaoJogarNovamente();
+  
+  imageMode(CORNER);
+}
+
+function drawBotaoJogarNovamente() {
+  let btnX = width / 2;
+  let btnY = height * 0.85;
+  let btnWidth = 250;
+  let btnHeight = 60;
+  
+  let mouseOver = mouseX > btnX - btnWidth/2 && 
+                  mouseX < btnX + btnWidth/2 && 
+                  mouseY > btnY - btnHeight/2 && 
+                  mouseY < btnY + btnHeight/2;
+  
+  // Botão dourado para vitória
+  fill(mouseOver ? color(255, 215, 0) : color(255, 165, 0));
+  stroke(255);
+  strokeWeight(2);
+  rectMode(CENTER);
+  rect(btnX, btnY, btnWidth, btnHeight, 15);
+  
+  // Texto do botão BRANCO (era preto)
+  fill(255); // BRANCO (era fill(0) - preto)
+  noStroke();
+  textSize(20);
+  text("JOGAR NOVAMENTE", btnX, btnY);
+  
+  rectMode(CORNER);
 }
 
 // ==================== TELA INICIAL ====================
@@ -315,9 +431,21 @@ function mousePressed() {
     }
   } else if (estadoJogo === "gameover") {
     let btnX = width / 2;
-    let btnY = height * 0.85; // Botão JOGAR NOVAMENTE (CORRIGIDO!)
+    let btnY = height * 0.85; // Botão JOGAR NOVAMENTE
     let btnWidth = 200;
     let btnHeight = 50;
+    
+    if (mouseX > btnX - btnWidth/2 && 
+        mouseX < btnX + btnWidth/2 && 
+        mouseY > btnY - btnHeight/2 && 
+        mouseY < btnY + btnHeight/2) {
+      reiniciarJogo();
+    }
+  } else if (estadoJogo === "vitoria") {
+    let btnX = width / 2;
+    let btnY = height * 0.85;
+    let btnWidth = 250;
+    let btnHeight = 60;
     
     if (mouseX > btnX - btnWidth/2 && 
         mouseX < btnX + btnWidth/2 && 
@@ -336,6 +464,7 @@ function reiniciarJogo() {
   colFlor = false;
   colApicultor = false;
   colHomem = false;
+  jogoGanho = false;
   
   // Reinicia o jogo
   inicializarJogo();
