@@ -4,23 +4,23 @@ class Apicultor extends Base {
     this.tamanho = tamanho;
     this.status = 0;
     this.vel = vel;
-    this.sentido = 0; // cima
-    this.img.resize(0, this.img.height * 0.6);
+    this.sentido = 0;
+    this.alturaDesejada = altura;
+    this.larguraDesejada = largura;
   }
 
   mostrar() {
-  const margemX = 45; // diminui dos lados
-  const margemY = 35; // diminui em cima e embaixo
-
-  image(this.img, this.x - 15, this.y + 25);
-
-  noFill();
-  // stroke("red");
-  rect(
-    this.x - 15 + margemX / 2,
-    this.y + 25 + margemY / 2,
-    this.img.width - margemX,
-    this.img.height - margemY
-  );
-}
+    image(this.img, this.x - 15, this.y + 25, this.larguraDesejada, this.alturaDesejada);
+    
+    const margemX = 45;
+    const margemY = 35;
+    noFill();
+    // stroke("red");
+    rect(
+      this.x - 15 + margemX / 2,
+      this.y + 25 + margemY / 2,
+      this.larguraDesejada - margemX,
+      this.alturaDesejada - margemY
+    );
+  }
 }

@@ -1,6 +1,6 @@
-let velocidadeMundo = 3;
+let velocidadeMundo = 4;
 let abelha, florInimigo, apicultor, homem, sol;
-let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial; // ADICIONE imgTelaInicial
+let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial;
 let plataformas = [];
 let larguraPlat = 1536;
 let alturaPlat = 198;
@@ -10,9 +10,13 @@ let vidas = 3;
 let maxVidas = 3;
 let invencivel = false;
 let tempoInvencivel = 0;
-let estadoJogo = "inicial"; // MUDE DE "jogando" PARA "inicial"
+let estadoJogo = "inicial";
 
 let colFlor = false, colApicultor = false, colHomem = false, abelhaCaiu = false;
+
+// VARIÁVEIS PARA ANIMAÇÃO DA ABELHA NA TELA INICIAL
+let abelhaOffsetY = 0;
+let abelhaAngle = 0;
 
 
 function preload() {
@@ -23,7 +27,7 @@ function preload() {
   imgSol = loadImage("img/sol.png");
   imgPlat = loadImage("img/plataforma.png");
   imgGameOver = loadImage("img/gameoverorigin.png");
-  imgTelaInicial = loadImage("img/belbee.png"); // ADICIONE ESTA LINHA
+  imgTelaInicial = loadImage("img/belbee.png");
 }
 
 function setup() {
@@ -36,14 +40,22 @@ function setup() {
 function inicializarJogo() {
   let topoPlat = height - imgPlat.height;
 
-  let alturaFlor = imgFlor.height * 0.18;
-  florInimigo = new Flor(700, topoPlat - alturaFlor, alturaFlor, 100, imgFlor, 2);
+  // ========== TAMANHOS FIXOS PARA OS NPCS ==========
+  // Alturas em pixels (valores fixos, não porcentagens!)
+  let alturaFlor = 250; // 120 pixels de altura
+  let alturaApi = 220;  // 150 pixels de altura
+  let alturaHomem = 220; // 150 pixels de altura
+  
+  // Larguras proporcionais mantendo a proporção original
+  let larguraFlor = alturaFlor * (imgFlor.width / imgFlor.height);
+  let larguraApi = alturaApi * (imgApi.width / imgApi.height);
+  let larguraHomem = alturaHomem * (imgHomem.width / imgHomem.height);
+  // =================================================
 
-  let alturaApi = imgApi.height * 0.6;
-  apicultor = new Apicultor(1000, topoPlat - alturaApi, 800, 60, 70, 2, imgApi);
-
-  let alturaHomem = imgHomem.height * 0.6;
-  homem = new Homem(1500, topoPlat - alturaHomem, 500, 60, 70, 2, imgHomem);
+  // Criação dos NPCs com tamanhos consistentes
+  florInimigo = new Flor(700, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2);
+  apicultor = new Apicultor(1000, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi);
+  homem = new Homem(1500, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem);
 
   sol = new Sol(1100, 50, 300, 150, 150, imgSol);
   abelha = new Abelha(120, 100, 0.5, 0, 10, imgBel, topoPlat);
@@ -52,7 +64,7 @@ function inicializarJogo() {
     florInimigo,
     apicultor,
     homem,
-    new Flor(2000, topoPlat - alturaFlor, alturaFlor, 100, imgFlor, 2)
+    new Flor(2000, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2)
   ];
 
   let x = -800;
@@ -133,12 +145,16 @@ function telaInicial() {
   // Fundo azul igual ao do jogo
   background("rgba(123, 204, 255, 1)");
   
-  // Centraliza a imagem
+  // Centraliza as imagens
   imageMode(CENTER);
   
-  // Ajusta o tamanho da imagem (pode ajustar os valores)
-  let imgWidth = imgTelaInicial.width * 0.6; // 60% do tamanho original
-  let imgHeight = imgTelaInicial.height * 0.6;
+  // ========== ANIMAÇÃO DA ABELHA ==========
+  abelhaOffsetY = sin(abelhaAngle) * 8; // Movimento reduzido
+  abelhaAngle += 0.05;
+  
+  // ========== IMAGEM PRINCIPAL (belbee.png) NO CENTRO - PEQUENA ==========
+  let imgWidth = imgTelaInicial.width * 0.35; // 35% do tamanho original (AJUSTE AQUI)
+  let imgHeight = imgTelaInicial.height * 0.35;
   
   // Ajusta se for muito grande para a tela
   if (imgWidth > width * 0.5) {
@@ -147,24 +163,45 @@ function telaInicial() {
     imgHeight *= ratio;
   }
   
-  // Desenha a imagem centralizada um pouco mais para cima
-  image(imgTelaInicial, width / 2, height / 2 - 60, imgWidth, imgHeight);
+  // POSIÇÃO CENTRAL DA TELA - MAIS PARA CIMA
+  let imgPrincipalX = width / 2;
+  let imgPrincipalY = height / 2 - 80; // MAIS PARA CIMA PARA DAR ESPAÇO
   
-  // Botão para começar o jogo
-  drawBotaoIniciar();
+  // Desenha a imagem principal (belbee.png com título)
+  image(imgTelaInicial, imgPrincipalX, imgPrincipalY, imgWidth, imgHeight);
   
-  // Instruções
-  drawInstrucoes();
+  // ========== ABELHA ANIMADA À ESQUERDA ==========
+  let abelhaSize = 0.35; // Abelha proporcionalmente menor
+  let abelhaWidth = imgBel.width * abelhaSize;
+  let abelhaHeight = imgBel.height * abelhaSize;
+  
+  // Posição da abelha à ESQUERDA da imagem central
+  let abelhaX = imgPrincipalX - imgWidth/2 - abelhaWidth/2 - 25;
+  let abelhaY = imgPrincipalY + abelhaOffsetY;
+  
+  // Rotação sutil da abelha
+  push();
+  translate(abelhaX + abelhaWidth/2, abelhaY + abelhaHeight/2);
+  rotate(sin(abelhaAngle * 0.5) * 0.08);
+  image(imgBel, -abelhaWidth/2, -abelhaHeight/2, abelhaWidth, abelhaHeight);
+  pop();
+  
+  // ========== BOTÃO E INSTRUÇÕES ==========
+  // Botão para começar o jogo (MAIS PARA BAIXO)
+  drawBotaoIniciarPequeno();
+  
+  // Instruções (MAIS PARA BAIXO)
+  drawInstrucoesPequeno();
   
   // Volta ao modo normal
   imageMode(CORNER);
 }
 
-function drawBotaoIniciar() {
+function drawBotaoIniciarPequeno() {
   let btnX = width / 2;
-  let btnY = height * 0.7;
-  let btnWidth = 250;
-  let btnHeight = 60;
+  let btnY = height * 0.75; // POSIÇÃO MAIS BAIXA
+  let btnWidth = 220; // Botão um pouco menor
+  let btnHeight = 55;
   
   // Verifica se o mouse está sobre o botão
   let mouseOver = mouseX > btnX - btnWidth/2 && 
@@ -173,33 +210,33 @@ function drawBotaoIniciar() {
                   mouseY < btnY + btnHeight/2;
   
   // Desenha o botão
-  fill(mouseOver ? color(50, 205, 50) : color(34, 139, 34)); // Verde mais escuro quando mouse over
+  fill(mouseOver ? color(50, 205, 50) : color(34, 139, 34));
   stroke(255);
-  strokeWeight(3);
+  strokeWeight(2);
   rectMode(CENTER);
-  rect(btnX, btnY, btnWidth, btnHeight, 15);
+  rect(btnX, btnY, btnWidth, btnHeight, 12);
   
   // Texto do botão
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(28);
+  textSize(24); // Texto um pouco menor
   text("INICIAR JOGO", btnX, btnY);
   
   rectMode(CORNER);
 }
 
-function drawInstrucoes() {
+function drawInstrucoesPequeno() {
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(20);
+  textSize(18); // Texto menor
   
-  // Instruções de controle
-  text("CONTROLES:", width / 2, height * 0.8);
-  textSize(18);
-  text("SETA PARA CIMA: Voar/Pular", width / 2, height * 0.84);
-  text("Desvie dos obstáculos e colete flores!", width / 2, height * 0.88);
+  // Instruções de controle (MAIS PARA BAIXO)
+  text("CONTROLES:", width / 2, height * 0.85);
+  textSize(16);
+  text("SETA PARA CIMA: Voar/Pular", width / 2, height * 0.89);
+  text("Desvie dos obstáculos e sobreviva!", width / 2, height * 0.93);
 }
 
 // ==================== TELA GAME OVER ====================
@@ -211,12 +248,12 @@ function telaGameOver() {
   imageMode(CENTER);
   
   // Tamanho da imagem (ajuste conforme necessário)
-  let imgWidth = imgGameOver.width * 0.3;
-  let imgHeight = imgGameOver.height * 0.3;
+  let imgWidth = imgGameOver.width * 0.4;
+  let imgHeight = imgGameOver.height * 0.4;
   
   // Ajusta se for muito grande para a tela
-  if (imgWidth > width * 0.9) {
-    let ratio = (width * 0.9) / imgWidth;
+  if (imgWidth > width * 0.8) {
+    let ratio = (width * 0.8) / imgWidth;
     imgWidth *= ratio;
     imgHeight *= ratio;
   }
@@ -233,7 +270,7 @@ function telaGameOver() {
 
 function drawBotaoReiniciar() {
   let btnX = width / 2;
-  let btnY = height * 0.75;
+  let btnY = height * 0.85;
   let btnWidth = 200;
   let btnHeight = 50;
   
@@ -254,8 +291,8 @@ function drawBotaoReiniciar() {
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(20);
-  text("Voltar ao início", btnX, btnY);
+  textSize(18);
+  text("JOGAR NOVAMENTE", btnX, btnY);
   
   rectMode(CORNER);
 }
@@ -264,9 +301,9 @@ function drawBotaoReiniciar() {
 function mousePressed() {
   if (estadoJogo === "inicial") {
     let btnX = width / 2;
-    let btnY = height * 0.7;
-    let btnWidth = 250;
-    let btnHeight = 60;
+    let btnY = height * 0.75; // MESMA POSIÇÃO QUE NO drawBotaoIniciarPequeno
+    let btnWidth = 220;
+    let btnHeight = 55;
     
     if (mouseX > btnX - btnWidth/2 && 
         mouseX < btnX + btnWidth/2 && 
