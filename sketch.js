@@ -405,6 +405,7 @@ function desenharNuvensInicio() {
   let nuvemSize2 = 0.2;
   let nuvemSize3 = 0.18;
   let nuvemSize4 = 0.12;
+  let nuvemSize5 = 0.16; // NOVA NUVEM - tamanho médio
   
   // Nuvem 1 - Canto superior esquerdo
   image(imgNuvem, width * 0.05, height * 0.1, 
@@ -421,6 +422,14 @@ function desenharNuvensInicio() {
   // Nuvem 4 - Lado esquerdo, abaixo da área principal
   image(imgNuvem, width * 0.15, height * 0.6, 
         imgNuvem.width * nuvemSize4, imgNuvem.height * nuvemSize4);
+  
+  // NOVA NUVEM 5 - Canto inferior direito, perto dos elementos
+  // Posicionada abaixo do botão "INICIAR JOGO" e à direita das instruções
+  let novaNuvemX = width * 0.85; // 85% da largura (canto direito)
+  let novaNuvemY = height * 0.8; // 80% da altura (abaixo do botão)
+  
+  image(imgNuvem, novaNuvemX, novaNuvemY, 
+        imgNuvem.width * nuvemSize5, imgNuvem.height * nuvemSize5);
 }
 
 function desenharNuvensVitoria() {
