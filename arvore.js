@@ -18,10 +18,10 @@ mostrar() {
   const hitboxW = this.larguraDesejada - margemX;
   const hitboxH = this.alturaDesejada - margemY * 1.05;
 
-  noFill();
-  stroke("green");
-  strokeWeight(2);
-  rect(hitboxX, hitboxY, hitboxW, hitboxH);
+  // noFill();
+  // stroke("green");
+  // strokeWeight(2);
+  // rect(hitboxX, hitboxY, hitboxW, hitboxH);
 
   this.hitboxOffsetX = margemX / 2;
   this.hitboxOffsetY = margemY;

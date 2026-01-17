@@ -8,19 +8,33 @@ class Flor extends Base {
   }
 
   mostrar() {
-    // Desenha a imagem no tamanho desejado sem modificar a original
-    image(this.img, this.x - 15, this.y + 25, this.larguraDesejada, this.alturaDesejada);
-    
-    // Hitbox
-    const margemX = 60;
-    const margemY = 35;
-    noFill();
-    stroke("red");
-    rect(
-      this.x - 15 + margemX / 2,
-      this.y + 25 + margemY / 2,
-      this.larguraDesejada - margemX,
-      this.alturaDesejada - margemY
-    );
-  }
+  // Posição real da imagem
+  const imgX = this.x - 15;
+  const imgY = this.y + 25;
+
+  image(this.img, imgX, imgY, this.larguraDesejada, this.alturaDesejada);
+
+  // ===== AJUSTE FINO DA HITBOX =====
+   const margemX = 60;
+   const margemY = 25; // um pouco menor → mais altura total
+
+  const hitboxX = this.x - 15 + margemX / 2;
+  const hitboxY = this.y + 25 + margemY / 2 - 8; 
+  const hitboxW = this.larguraDesejada - margemX;
+  const hitboxH = this.alturaDesejada - margemY + 10; 
+
+
+  // Debug visual
+  // noFill();
+  // stroke("red");
+  // rect(hitboxX, hitboxY, hitboxW, hitboxH);
+
+  // ===== HITBOX REAL =====
+  this.hitboxOffsetX = hitboxX - this.x;
+  this.hitboxOffsetY = hitboxY - this.y;
+  this.hitboxWidth = hitboxW;
+  this.hitboxHeight = hitboxH;
+}
+
+
 }
