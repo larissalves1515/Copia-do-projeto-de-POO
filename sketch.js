@@ -1,24 +1,24 @@
 let velocidadeMundo = 5;
 let abelha, florInimigo, apicultor, homem, sol, arvore;
-let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial, imgArvore, imgParabens;
+let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial, imgArvore, imgParabens, imgNuvem;
 let plataformas = [];
 let larguraPlat = 1536;
 let alturaPlat = 198;
 let cameraX = 0;
 let npcs = [];
+let nuvens = [];
 let vidas = 3;
 let maxVidas = 3;
 let invencivel = false;
 let tempoInvencivel = 0;
 let estadoJogo = "inicial";
-let jogoGanho = false; // Nova variável para controlar vitória
+let jogoGanho = false;
 
 let colFlor = false, colApicultor = false, colHomem = false, abelhaCaiu = false;
 
 // VARIÁVEIS PARA ANIMAÇÃO DA ABELHA NA TELA INICIAL
 let abelhaOffsetY = 0;
 let abelhaAngle = 0;
-
 
 function preload() {
   imgBel = loadImage("img/bel-sm.png");
@@ -29,85 +29,77 @@ function preload() {
   imgPlat = loadImage("img/plataforma.png");
   imgGameOver = loadImage("img/gameoverorigin.png");
   imgTelaInicial = loadImage("img/belbee.png");
-  imgArvore = loadImage("img/arvore.png"); // Nova imagem
-  imgParabens = loadImage("img/parabens.png"); // Nova imagem de parabéns
+  imgArvore = loadImage("img/arvore.png");
+  imgParabens = loadImage("img/parabens.png");
+  imgNuvem = loadImage("img/nuvem.png");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  
-  // Inicializa o jogo, mas não começa ainda
   inicializarJogo();
 }
 
 function inicializarJogo() {
   let topoPlat = height - imgPlat.height;
-  jogoGanho = false; // Reseta estado de vitória
+  jogoGanho = false;
 
-  // ========== TAMANHOS FIXOS PARA OS NPCS ==========
-  // Alturas em pixels (valores fixos, não porcentagens!)
-  let alturaFlor = 250; // 120 pixels de altura
-  let alturaApi = 220;  // 150 pixels de altura
-  let alturaHomem = 220; // 150 pixels de altura
-  let alturaArvore = 450; // Árvore maior que os outros
+  let alturaFlor = 250;
+  let alturaApi = 220;
+  let alturaHomem = 220;
+  let alturaArvore = 450;
   
-  // Larguras proporcionais mantendo a proporção original
   let larguraFlor = alturaFlor * (imgFlor.width / imgFlor.height);
   let larguraApi = alturaApi * (imgApi.width / imgApi.height);
   let larguraHomem = alturaHomem * (imgHomem.width / imgHomem.height);
   let larguraArvore = alturaArvore * (imgArvore.width / imgArvore.height);
-  // =================================================
 
-  // Criação dos NPCs com tamanhos consistentes
   florInimigo = new Flor(700, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2);
   apicultor = new Apicultor(1000, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi);
   homem = new Homem(1500, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem);
-  
-  // ÁRVORE - IMPORTANTE: Use a classe Arvore, não Flor!
-  // Posição inicial bem distante (ajuste conforme necessário)
   arvore = new Arvore(5000, topoPlat - alturaArvore + 50, 1, alturaArvore, larguraArvore, imgArvore);
 
   sol = new Sol(1100, 50, 300, 150, 150, imgSol);
   abelha = new Abelha(120, 100, 0.5, 0, 10, imgBel, topoPlat);
+  
+  // CRIANDO NUVENS PARA O JOGO - MAIORES E EM POSIÇÕES DIFERENTES
+  nuvens = [];
+  
+  // 4 nuvens em posições e tamanhos variados - TAMANHOS AUMENTADOS
+  // NUVEM 1: Antes do sol, alta e média
+  nuvens.push(new Nuvem(700, 40, 0.15, imgNuvem, 0.8)); // Aumentado de 0.07 para 0.15
+  
+  // NUVEM 2: Perto do sol, baixa e grande
+  nuvens.push(new Nuvem(900, 90, 0.18, imgNuvem, 0.7)); // Aumentado de 0.09 para 0.18
+  
+  // NUVEM 3: Depois do sol, média e média
+  nuvens.push(new Nuvem(1300, 60, 0.16, imgNuvem, 1.0)); // Aumentado de 0.08 para 0.16
+  
+  // NUVEM 4: Longe do sol, alta e pequena
+  nuvens.push(new Nuvem(1600, 30, 0.12, imgNuvem, 1.2)); // Aumentado de 0.06 para 0.12
+  
+  // NUVEM 5: Muito alta e pequena
+  nuvens.push(new Nuvem(1900, 20, 0.10, imgNuvem, 1.1)); // Aumentado de 0.05 para 0.10
 
   npcs = [
     florInimigo,
     apicultor,
     homem,
-    
-    // ========== NPCs ADICIONAIS ESTRATEGICAMENTE ESPALHADOS ==========
-    // Primeira área (depois do início, com espaço para respirar)
     new Flor(2000, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
-    
-    // Segunda área (após um bom espaço)
     new Apicultor(2500, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
-    
-    // Terceira área (um pouco mais adiante)
     new Homem(3000, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
-    
-    // Quarta área (dois obstáculos próximos para desafio)
     new Flor(3200, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
     new Apicultor(3400, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
-    
-    // Quinta área (após espaço para recuperação)
     new Homem(3800, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
-    
-    // Sexta área (pré-árvore - desafio final moderado)
     new Flor(4200, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
     new Apicultor(4400, topoPlat - alturaApi, 800, alturaApi, larguraApi, 2, imgApi),
     new Homem(4600, topoPlat - alturaHomem, 500, alturaHomem, larguraHomem, 2, imgHomem),
-    
-    // Últimos obstáculos antes da árvore
     new Flor(4800, topoPlat - alturaFlor, alturaFlor, larguraFlor, imgFlor, 2),
-    
-    arvore // Adiciona a árvore aos NPCs (última posição)
+    arvore
   ];
 
   let x = -800;
   while (x < windowWidth * 10) {
-    plataformas.push(
-      new Plataforma(x, topoPlat, 1, imgPlat.height, larguraPlat, imgPlat)
-    );
+    plataformas.push(new Plataforma(x, topoPlat, 1, imgPlat.height, larguraPlat, imgPlat));
     x += larguraPlat;
   }
 }
@@ -115,7 +107,6 @@ function inicializarJogo() {
 function draw() {
   background("rgba(123, 204, 255, 1)");
 
-  // CONTROLE DAS TELAS
   if (estadoJogo === "inicial") {
     telaInicial();
     return;
@@ -130,19 +121,42 @@ function draw() {
   // JOGO EM ANDAMENTO
   sol.x -= velocidadeMundo * 0.2;
   sol.mostrar();
+  
+  // DESENHAR E MOVER NUVENS
+  for (let i = nuvens.length - 1; i >= 0; i--) {
+    let nuvem = nuvens[i];
+    nuvem.x -= nuvem.velocidade;
+    nuvem.mostrar();
+    
+    if (nuvem.x + nuvem.largura < -100) {
+      // Reposiciona à direita com posições variadas
+      nuvem.x = width + random(300, 800);
+      
+      // Alturas variadas: algumas altas, algumas baixas
+      if (random() > 0.5) {
+        nuvem.y = random(20, 50); // Nuvens altas
+      } else {
+        nuvem.y = random(60, 100); // Nuvens baixas
+      }
+      
+      // Tamanhos variados: AUMENTADO (0.10 a 0.25)
+      nuvem.tamanho = random(0.10, 0.25); // Aumentado de (0.05, 0.10) para (0.10, 0.25)
+      
+      // IMPORTANTE: Atualizar largura e altura com o novo tamanho
+      nuvem.largura = imgNuvem.width * nuvem.tamanho;
+      nuvem.altura = imgNuvem.height * nuvem.tamanho;
+    }
+  }
 
   abelha.moverVertical();
   abelhaCaiu = abelha.caiu();
 
-  // Se a abelha caiu, game over
   if (abelhaCaiu && !jogoGanho) {
     vidas = 0;
   }
 
-  // plataformas
   for (let plat of plataformas) {
     plat.x -= velocidadeMundo;
-
     if (plat.x + plat.largura < 0) {
       plat.x += larguraPlat * plataformas.length;
     }
@@ -154,23 +168,16 @@ function draw() {
     npc.x -= velocidadeMundo;
     npc.mostrar();
 
-    // Verifica colisão com a árvore (vitória)
     if (npc === arvore && abelha.colidiu(npc)) {
       jogoGanho = true;
       estadoJogo = "vitoria";
-      return; // Sai da função draw para mostrar tela de vitória
+      return;
     }
     
-    // Verifica colisão com inimigos (apenas se não ganhou ainda)
     if (!jogoGanho && abelha.colidiu(npc) && !invencivel && npc !== arvore) {
       vidas--;
       invencivel = true;
       tempoInvencivel = frameCount;
-
-      if (npc instanceof Flor) colFlor = true;
-      if (npc instanceof Apicultor) colApicultor = true;
-      if (npc instanceof Homem) colHomem = true;
-
       npcs.splice(i, 1);
     }
   }
@@ -181,11 +188,9 @@ function draw() {
 
   abelha.mostrar();
   
-  // Mostra vidas - AGORA NA VERTICAL
   for (let i = 0; i < maxVidas; i++) {
     let cheio = i < vidas;
-    // Alteração: em vez de 40 + i * 50 para X, usamos 40 para X fixo e 50 + i * 50 para Y
-    desenharCoracao(40, 50 + i * 50, 0.6, cheio); // Corações na vertical
+    desenharCoracao(40, 50 + i * 50, 0.6, cheio);
   }
   
   if (vidas <= 0 && !jogoGanho) {
@@ -195,54 +200,39 @@ function draw() {
 
 // ==================== TELA DE VITÓRIA ATUALIZADA ====================
 function telaVitoria() {
-  // Fundo azul simples (sem efeitos de confete)
   background("rgba(123, 204, 255, 1)");
-  
-  // Centraliza tudo
+  desenharNuvensVitoria();
   imageMode(CENTER);
   textAlign(CENTER, CENTER);
   
-  // ========== ANIMAÇÃO DA ABELHA DO LADO ESQUERDO (MAIS PERTO) ==========
-  let abelhaWidth = imgBel.width * 0.2; // 20% do tamanho original
+  let abelhaWidth = imgBel.width * 0.2;
   let abelhaHeight = imgBel.height * 0.2;
-  
-  // ========== IMAGEM DA ÁRVORE NO CENTRO ==========
-  let arvoreWidth = imgArvore.width * 0.22; // 22% do tamanho original
+  let arvoreWidth = imgArvore.width * 0.22;
   let arvoreHeight = imgArvore.height * 0.22;
   
   let centroX = width / 2;
-  let arvoreY = height / 2 - 130; // AUMENTEI PARA 130 (era 100) - ARVORE MAIS PARA CIMA
+  let arvoreY = height / 2 - 130;
   
-  // Posição da abelha à ESQUERDA da árvore (O MAIS PERTO POSSÍVEL)
-  let espacamento = 20; // ESPAÇO MÍNIMO entre as imagens
-  
-  // ALTERAÇÃO AQUI: Adicionei +15 pixels para baixo na posição Y da abelha
+  let espacamento = 20;
   let abelhaX = centroX - arvoreWidth/2 - abelhaWidth/2 - espacamento;
-  let abelhaY = arvoreY + sin(frameCount * 0.05) * 8 + 15; // +15 PIXELS PARA BAIXO
+  let abelhaY = arvoreY + sin(frameCount * 0.05) * 8 + 15;
   
-  // Desenha a ABELHA à ESQUERDA
   image(imgBel, abelhaX, abelhaY, abelhaWidth, abelhaHeight);
-  
-  // Desenha a ÁRVORE no centro
   image(imgArvore, centroX, arvoreY, arvoreWidth, arvoreHeight);
   
-  // ========== IMAGEM "PARABENS.PNG" EMBAIXO DAS IMAGENS ==========
   if (imgParabens) {
-    let parabensWidth = imgParabens.width * 0.25; // 25% do tamanho original
+    let parabensWidth = imgParabens.width * 0.25;
     let parabensHeight = imgParabens.height * 0.25;
-    let parabensY = arvoreY + arvoreHeight/2 + 50; // AUMENTEI PARA 50 (era 40) - MAIS ESPAÇO ENTRE ÁRVORE E PARABÉNS
+    let parabensY = arvoreY + arvoreHeight/2 + 50;
     
-    // Desenha a imagem de parabéns
     image(imgParabens, centroX, parabensY, parabensWidth, parabensHeight);
     
-    // ========== TEXTO ADICIONAL MAIS PARA CIMA ==========
     noStroke();
     fill(255);
     textSize(22);
-    let textoY = parabensY + parabensHeight/2 - 15; // TEXTO MAIS PARA CIMA
+    let textoY = parabensY + parabensHeight/2 - 15;
     text("A abelha chegou no seu lar!", centroX, textoY);
   } else {
-    // Fallback caso a imagem não exista
     noStroke();
     fill(255);
     textSize(24);
@@ -250,15 +240,13 @@ function telaVitoria() {
     text("A abelha chegou no seu lar!", centroX, textoY);
   }
   
-  // Botão para jogar novamente (POSICIONADO MAIS PARA BAIXO)
   drawBotaoJogarNovamente();
-  
   imageMode(CORNER);
 }
 
 function drawBotaoJogarNovamente() {
   let btnX = width / 2;
-  let btnY = height * 0.88; // MAIS PARA BAIXO
+  let btnY = height * 0.88;
   let btnWidth = 220;
   let btnHeight = 50;
   
@@ -267,14 +255,12 @@ function drawBotaoJogarNovamente() {
                   mouseY > btnY - btnHeight/2 && 
                   mouseY < btnY + btnHeight/2;
   
-  // Botão dourado para vitória
   fill(mouseOver ? color(255, 215, 0) : color(255, 165, 0));
   stroke(255);
   strokeWeight(2);
   rectMode(CENTER);
   rect(btnX, btnY, btnWidth, btnHeight, 12);
   
-  // Texto do botão BRANCO
   fill(255);
   noStroke();
   textSize(18);
@@ -285,58 +271,42 @@ function drawBotaoJogarNovamente() {
 
 // ==================== TELA INICIAL ====================
 function telaInicial() {
-  // Fundo azul igual ao do jogo
   background("rgba(123, 204, 255, 1)");
-  
-  // Centraliza as imagens
+  desenharNuvensInicio();
   imageMode(CENTER);
   
-  // ========== ANIMAÇÃO DA ABELHA ==========
-  abelhaOffsetY = sin(abelhaAngle) * 8; // Movimento reduzido
+  abelhaOffsetY = sin(abelhaAngle) * 8;
   abelhaAngle += 0.05;
   
-  // ========== IMAGEM PRINCIPAL (belbee.png) NO CENTRO - PEQUENA ==========
   let imgWidth = imgTelaInicial.width * 0.35;
   let imgHeight = imgTelaInicial.height * 0.35;
   
-  // Ajusta se for muito grande para a tela
   if (imgWidth > width * 0.5) {
     let ratio = (width * 0.5) / imgWidth;
     imgWidth *= ratio;
     imgHeight *= ratio;
   }
   
-  // POSIÇÃO CENTRAL DA TELA - MAIS PARA CIMA
   let imgPrincipalX = width / 2;
   let imgPrincipalY = height / 2 - 80;
   
-  // Desenha a imagem principal (belbee.png com título)
   image(imgTelaInicial, imgPrincipalX, imgPrincipalY, imgWidth, imgHeight);
   
-  // ========== ABELHA ANIMADA À ESQUERDA ==========
   let abelhaSize = 0.35;
   let abelhaWidth = imgBel.width * abelhaSize;
   let abelhaHeight = imgBel.height * abelhaSize;
   
-  // Posição da abelha à ESQUERDA da imagem central
   let abelhaX = imgPrincipalX - imgWidth/2 - abelhaWidth/2 - 25;
   let abelhaY = imgPrincipalY + abelhaOffsetY;
   
-  // Rotação sutil da abelha
   push();
   translate(abelhaX + abelhaWidth/2, abelhaY + abelhaHeight/2);
   rotate(sin(abelhaAngle * 0.5) * 0.08);
   image(imgBel, -abelhaWidth/2, -abelhaHeight/2, abelhaWidth, abelhaHeight);
   pop();
   
-  // ========== BOTÃO E INSTRUÇÕES ==========
-  // Botão para começar o jogo (MAIS PARA BAIXO)
   drawBotaoIniciarPequeno();
-  
-  // Instruções (MAIS PARA BAIXO)
   drawInstrucoesPequeno();
-  
-  // Volta ao modo normal
   imageMode(CORNER);
 }
 
@@ -346,20 +316,17 @@ function drawBotaoIniciarPequeno() {
   let btnWidth = 220;
   let btnHeight = 55;
   
-  // Verifica se o mouse está sobre o botão
   let mouseOver = mouseX > btnX - btnWidth/2 && 
                   mouseX < btnX + btnWidth/2 && 
                   mouseY > btnY - btnHeight/2 && 
                   mouseY < btnY + btnHeight/2;
   
-  // Desenha o botão
   fill(mouseOver ? color(50, 205, 50) : color(34, 139, 34));
   stroke(255);
   strokeWeight(2);
   rectMode(CENTER);
   rect(btnX, btnY, btnWidth, btnHeight, 12);
   
-  // Texto do botão
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
@@ -375,7 +342,6 @@ function drawInstrucoesPequeno() {
   textAlign(CENTER, CENTER);
   textSize(18);
   
-  // Instruções de controle (MAIS PARA BAIXO)
   text("CONTROLES:", width / 2, height * 0.85);
   textSize(16);
   text("SETA PARA CIMA: Voar/Pular", width / 2, height * 0.89);
@@ -384,30 +350,21 @@ function drawInstrucoesPequeno() {
 
 // ==================== TELA GAME OVER ====================
 function telaGameOver() {
-  // Fundo azul igual ao do jogo
   background("rgba(123, 204, 255, 1)");
-  
-  // Centraliza a imagem
+  desenharNuvensGameOver();
   imageMode(CENTER);
   
-  // Tamanho da imagem (ajuste conforme necessário)
   let imgWidth = imgGameOver.width * 0.4;
   let imgHeight = imgGameOver.height * 0.4;
   
-  // Ajusta se for muito grande para a tela
   if (imgWidth > width * 0.8) {
     let ratio = (width * 0.8) / imgWidth;
     imgWidth *= ratio;
     imgHeight *= ratio;
   }
   
-  // Desenha a imagem
   image(imgGameOver, width / 2, height / 2 - 50, imgWidth, imgHeight);
-  
-  // Botão de reiniciar (MAIS PARA BAIXO - 0.85)
   drawBotaoReiniciar();
-  
-  // Volta ao modo normal
   imageMode(CORNER);
 }
 
@@ -417,20 +374,17 @@ function drawBotaoReiniciar() {
   let btnWidth = 200;
   let btnHeight = 50;
   
-  // Verifica se o mouse está sobre o botão
   let mouseOver = mouseX > btnX - btnWidth/2 && 
                   mouseX < btnX + btnWidth/2 && 
                   mouseY > btnY - btnHeight/2 && 
                   mouseY < btnY + btnHeight/2;
   
-  // Desenha o botão
   fill(mouseOver ? color(255, 200, 0) : color(255, 165, 0));
   stroke(255);
   strokeWeight(2);
   rectMode(CENTER);
   rect(btnX, btnY, btnWidth, btnHeight, 10);
   
-  // Texto do botão
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
@@ -438,6 +392,89 @@ function drawBotaoReiniciar() {
   text("JOGAR NOVAMENTE", btnX, btnY);
   
   rectMode(CORNER);
+}
+
+// ==================== FUNÇÕES PARA NUVENS NAS TELAS ====================
+function desenharNuvensInicio() {
+  if (!imgNuvem) return;
+  
+  imageMode(CORNER);
+  
+  // Nuvens nas telas mantêm o tamanho ORIGINAL
+  let nuvemSize1 = 0.15;
+  let nuvemSize2 = 0.2;
+  let nuvemSize3 = 0.18;
+  let nuvemSize4 = 0.12;
+  
+  // Nuvem 1 - Canto superior esquerdo
+  image(imgNuvem, width * 0.05, height * 0.1, 
+        imgNuvem.width * nuvemSize1, imgNuvem.height * nuvemSize1);
+  
+  // Nuvem 2 - Meio superior
+  image(imgNuvem, width * 0.3, height * 0.15, 
+        imgNuvem.width * nuvemSize2, imgNuvem.height * nuvemSize2);
+  
+  // Nuvem 3 - Canto superior direito
+  image(imgNuvem, width * 0.7, height * 0.2, 
+        imgNuvem.width * nuvemSize3, imgNuvem.height * nuvemSize3);
+  
+  // Nuvem 4 - Lado esquerdo, abaixo da área principal
+  image(imgNuvem, width * 0.15, height * 0.6, 
+        imgNuvem.width * nuvemSize4, imgNuvem.height * nuvemSize4);
+}
+
+function desenharNuvensVitoria() {
+  if (!imgNuvem) return;
+  
+  imageMode(CORNER);
+  
+  let nuvemSize1 = 0.18;
+  let nuvemSize2 = 0.15;
+  let nuvemSize3 = 0.22;
+  let nuvemSize4 = 0.14;
+  
+  // Nuvem 1 - Canto superior esquerdo (longe da abelha)
+  image(imgNuvem, width * 0.02, height * 0.05, 
+        imgNuvem.width * nuvemSize1, imgNuvem.height * nuvemSize1);
+  
+  // Nuvem 2 - Meio superior direito (acima da árvore)
+  image(imgNuvem, width * 0.75, height * 0.08, 
+        imgNuvem.width * nuvemSize2, imgNuvem.height * nuvemSize2);
+  
+  // Nuvem 3 - Lado direito (abaixo do botão)
+  image(imgNuvem, width * 0.82, height * 0.7, 
+        imgNuvem.width * nuvemSize3, imgNuvem.height * nuvemSize3);
+  
+  // Nuvem 4 - Canto inferior esquerdo (abaixo do texto)
+  image(imgNuvem, width * 0.05, height * 0.75, 
+        imgNuvem.width * nuvemSize4, imgNuvem.height * nuvemSize4);
+}
+
+function desenharNuvensGameOver() {
+  if (!imgNuvem) return;
+  
+  imageMode(CORNER);
+  
+  let nuvemSize1 = 0.2;
+  let nuvemSize2 = 0.16;
+  let nuvemSize3 = 0.18;
+  let nuvemSize4 = 0.14;
+  
+  // Nuvem 1 - Canto superior esquerdo
+  image(imgNuvem, width * 0.08, height * 0.1, 
+        imgNuvem.width * nuvemSize1, imgNuvem.height * nuvemSize1);
+  
+  // Nuvem 2 - Acima da imagem de game over
+  image(imgNuvem, width * 0.35, height * 0.05, 
+        imgNuvem.width * nuvemSize2, imgNuvem.height * nuvemSize2);
+  
+  // Nuvem 3 - Canto superior direito
+  image(imgNuvem, width * 0.78, height * 0.15, 
+        imgNuvem.width * nuvemSize3, imgNuvem.height * nuvemSize3);
+  
+  // Nuvem 4 - Lado esquerdo (abaixo do botão)
+  image(imgNuvem, width * 0.1, height * 0.7, 
+        imgNuvem.width * nuvemSize4, imgNuvem.height * nuvemSize4);
 }
 
 // ==================== CONTROLE DE CLIQUE DO MOUSE ====================
@@ -482,7 +519,6 @@ function mousePressed() {
 }
 
 function reiniciarJogo() {
-  // Reinicia todas as variáveis do jogo
   vidas = 3;
   estadoJogo = "jogando";
   invencivel = false;
@@ -490,8 +526,6 @@ function reiniciarJogo() {
   colApicultor = false;
   colHomem = false;
   jogoGanho = false;
-  
-  // Reinicia o jogo
   inicializarJogo();
 }
 

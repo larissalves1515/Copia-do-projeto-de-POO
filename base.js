@@ -1,3 +1,4 @@
+// base.js - VERIFIQUE SE ESTÁ ASSIM
 class Base {
   constructor(x, y, altura, largura, img) {
     this.x = x;
@@ -5,15 +6,16 @@ class Base {
     this.altura = altura;
     this.largura = largura;
     this.img = img;
+    
+    // NÃO fazer isso ↓ (remove se tiver)
+    // this.img.resize(this.largura, this.altura);
   }
 
-  // Método base que pode ser sobrescrito pelas classes filhas
   mostrar() {
-    // Desenha a imagem na posição (x, y) com o tamanho especificado
+    // Usa this.largura e this.altura que já foram calculadas
     image(this.img, this.x, this.y, this.largura, this.altura);
   }
 
-  // Método para debug (hitbox)
   mostrarHitbox(cor = "red") {
     noFill();
     stroke(cor);
