@@ -164,10 +164,11 @@ function draw() {
 
   abelha.mostrar();
   
-  // Mostra vidas
+  // Mostra vidas - AGORA NA VERTICAL
   for (let i = 0; i < maxVidas; i++) {
     let cheio = i < vidas;
-    desenharCoracao(40 + i * 50, 50, 0.6, cheio);
+    // Alteração: em vez de 40 + i * 50 para X, usamos 40 para X fixo e 50 + i * 50 para Y
+    desenharCoracao(40, 50 + i * 50, 0.6, cheio); // Corações na vertical
   }
   
   if (vidas <= 0 && !jogoGanho) {
@@ -184,46 +185,55 @@ function telaVitoria() {
   imageMode(CENTER);
   textAlign(CENTER, CENTER);
   
-  // ========== IMAGEM DA ÁRVORE NO CENTRO (MAIS PARA CIMA) ==========
-  let arvoreWidth = imgArvore.width * 0.25; // 25% do tamanho original (menor)
-  let arvoreHeight = imgArvore.height * 0.25;
+  // ========== ANIMAÇÃO DA ABELHA DO LADO ESQUERDO (MAIS PERTO) ==========
+  let abelhaWidth = imgBel.width * 0.2; // 20% do tamanho original
+  let abelhaHeight = imgBel.height * 0.2;
+  
+  // ========== IMAGEM DA ÁRVORE NO CENTRO ==========
+  let arvoreWidth = imgArvore.width * 0.22; // 22% do tamanho original
+  let arvoreHeight = imgArvore.height * 0.22;
   
   let centroX = width / 2;
-  let arvoreY = height / 2 - 100; // MAIS PARA CIMA (era -50)
+  let arvoreY = height / 2 - 130; // AUMENTEI PARA 130 (era 100) - ARVORE MAIS PARA CIMA
+  
+  // Posição da abelha à ESQUERDA da árvore (O MAIS PERTO POSSÍVEL)
+  let espacamento = 20; // ESPAÇO MÍNIMO entre as imagens
+  
+  // ALTERAÇÃO AQUI: Adicionei +15 pixels para baixo na posição Y da abelha
+  let abelhaX = centroX - arvoreWidth/2 - abelhaWidth/2 - espacamento;
+  let abelhaY = arvoreY + sin(frameCount * 0.05) * 8 + 15; // +15 PIXELS PARA BAIXO
+  
+  // Desenha a ABELHA à ESQUERDA
+  image(imgBel, abelhaX, abelhaY, abelhaWidth, abelhaHeight);
   
   // Desenha a ÁRVORE no centro
   image(imgArvore, centroX, arvoreY, arvoreWidth, arvoreHeight);
   
-  // ========== IMAGEM "PARABENS.PNG" EMBAIXO DA ÁRVORE COM ESPAÇO ==========
+  // ========== IMAGEM "PARABENS.PNG" EMBAIXO DAS IMAGENS ==========
   if (imgParabens) {
-    let parabensWidth = imgParabens.width * 0.3; // 30% do tamanho original
-    let parabensHeight = imgParabens.height * 0.3;
-    let parabensY = arvoreY + arvoreHeight/2 + 50; // MAIS ESPAÇO (era +20)
+    let parabensWidth = imgParabens.width * 0.25; // 25% do tamanho original
+    let parabensHeight = imgParabens.height * 0.25;
+    let parabensY = arvoreY + arvoreHeight/2 + 50; // AUMENTEI PARA 50 (era 40) - MAIS ESPAÇO ENTRE ÁRVORE E PARABÉNS
     
     // Desenha a imagem de parabéns
     image(imgParabens, centroX, parabensY, parabensWidth, parabensHeight);
     
-    // ========== TEXTO ADICIONAL COM MAIS ESPAÇO ==========
+    // ========== TEXTO ADICIONAL MAIS PARA CIMA ==========
     noStroke();
     fill(255);
-    textSize(24);
-    text("A abelha chegou no seu lar!", centroX, parabensY + parabensHeight/2 + 50); // MAIS ESPAÇO
+    textSize(22);
+    let textoY = parabensY + parabensHeight/2 - 15; // TEXTO MAIS PARA CIMA
+    text("A abelha chegou no seu lar!", centroX, textoY);
   } else {
-    // Fallback caso a imagem não exista (mantém o texto antigo)
-    fill(255, 215, 0); // Cor dourada
-    stroke(0);
-    strokeWeight(3);
-    textSize(48);
-    let parabensY = arvoreY + arvoreHeight/2 + 50;
-    text("PARABÉNS!", centroX, parabensY);
-    
+    // Fallback caso a imagem não exista
     noStroke();
     fill(255);
     textSize(24);
-    text("A abelha chegou no seu lar!", centroX, parabensY + 80); // MAIS ESPAÇO
+    let textoY = arvoreY + arvoreHeight/2 + 80;
+    text("A abelha chegou no seu lar!", centroX, textoY);
   }
   
-  // Botão para jogar novamente
+  // Botão para jogar novamente (POSICIONADO MAIS PARA BAIXO)
   drawBotaoJogarNovamente();
   
   imageMode(CORNER);
@@ -231,9 +241,9 @@ function telaVitoria() {
 
 function drawBotaoJogarNovamente() {
   let btnX = width / 2;
-  let btnY = height * 0.85;
-  let btnWidth = 250;
-  let btnHeight = 60;
+  let btnY = height * 0.88; // MAIS PARA BAIXO
+  let btnWidth = 220;
+  let btnHeight = 50;
   
   let mouseOver = mouseX > btnX - btnWidth/2 && 
                   mouseX < btnX + btnWidth/2 && 
@@ -245,12 +255,12 @@ function drawBotaoJogarNovamente() {
   stroke(255);
   strokeWeight(2);
   rectMode(CENTER);
-  rect(btnX, btnY, btnWidth, btnHeight, 15);
+  rect(btnX, btnY, btnWidth, btnHeight, 12);
   
-  // Texto do botão BRANCO (era preto)
-  fill(255); // BRANCO (era fill(0) - preto)
+  // Texto do botão BRANCO
+  fill(255);
   noStroke();
-  textSize(20);
+  textSize(18);
   text("JOGAR NOVAMENTE", btnX, btnY);
   
   rectMode(CORNER);
@@ -269,7 +279,7 @@ function telaInicial() {
   abelhaAngle += 0.05;
   
   // ========== IMAGEM PRINCIPAL (belbee.png) NO CENTRO - PEQUENA ==========
-  let imgWidth = imgTelaInicial.width * 0.35; // 35% do tamanho original (AJUSTE AQUI)
+  let imgWidth = imgTelaInicial.width * 0.35;
   let imgHeight = imgTelaInicial.height * 0.35;
   
   // Ajusta se for muito grande para a tela
@@ -281,13 +291,13 @@ function telaInicial() {
   
   // POSIÇÃO CENTRAL DA TELA - MAIS PARA CIMA
   let imgPrincipalX = width / 2;
-  let imgPrincipalY = height / 2 - 80; // MAIS PARA CIMA PARA DAR ESPAÇO
+  let imgPrincipalY = height / 2 - 80;
   
   // Desenha a imagem principal (belbee.png com título)
   image(imgTelaInicial, imgPrincipalX, imgPrincipalY, imgWidth, imgHeight);
   
   // ========== ABELHA ANIMADA À ESQUERDA ==========
-  let abelhaSize = 0.35; // Abelha proporcionalmente menor
+  let abelhaSize = 0.35;
   let abelhaWidth = imgBel.width * abelhaSize;
   let abelhaHeight = imgBel.height * abelhaSize;
   
@@ -315,8 +325,8 @@ function telaInicial() {
 
 function drawBotaoIniciarPequeno() {
   let btnX = width / 2;
-  let btnY = height * 0.75; // POSIÇÃO MAIS BAIXA
-  let btnWidth = 220; // Botão um pouco menor
+  let btnY = height * 0.75;
+  let btnWidth = 220;
   let btnHeight = 55;
   
   // Verifica se o mouse está sobre o botão
@@ -336,7 +346,7 @@ function drawBotaoIniciarPequeno() {
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(24); // Texto um pouco menor
+  textSize(24);
   text("INICIAR JOGO", btnX, btnY);
   
   rectMode(CORNER);
@@ -346,7 +356,7 @@ function drawInstrucoesPequeno() {
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(18); // Texto menor
+  textSize(18);
   
   // Instruções de controle (MAIS PARA BAIXO)
   text("CONTROLES:", width / 2, height * 0.85);
@@ -384,10 +394,9 @@ function telaGameOver() {
   imageMode(CORNER);
 }
 
-
 function drawBotaoReiniciar() {
   let btnX = width / 2;
-  let btnY = height * 0.85; // MAIS PARA BAIXO (era 0.75)
+  let btnY = height * 0.85;
   let btnWidth = 200;
   let btnHeight = 50;
   
@@ -414,12 +423,11 @@ function drawBotaoReiniciar() {
   rectMode(CORNER);
 }
 
-
 // ==================== CONTROLE DE CLIQUE DO MOUSE ====================
 function mousePressed() {
   if (estadoJogo === "inicial") {
     let btnX = width / 2;
-    let btnY = height * 0.75; // Botão INICIAR
+    let btnY = height * 0.75;
     let btnWidth = 220;
     let btnHeight = 55;
     
@@ -431,7 +439,7 @@ function mousePressed() {
     }
   } else if (estadoJogo === "gameover") {
     let btnX = width / 2;
-    let btnY = height * 0.85; // Botão JOGAR NOVAMENTE
+    let btnY = height * 0.85;
     let btnWidth = 200;
     let btnHeight = 50;
     
@@ -443,9 +451,9 @@ function mousePressed() {
     }
   } else if (estadoJogo === "vitoria") {
     let btnX = width / 2;
-    let btnY = height * 0.85;
-    let btnWidth = 250;
-    let btnHeight = 60;
+    let btnY = height * 0.88;
+    let btnWidth = 220;
+    let btnHeight = 50;
     
     if (mouseX > btnX - btnWidth/2 && 
         mouseX < btnX + btnWidth/2 && 
