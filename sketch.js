@@ -1,10 +1,12 @@
+//Variaveis e arrays importantes para o jogo
+
 let velocidadeMundo = 5;
 let abelha, florInimigo, apicultor, homem, sol, arvore;
 let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial, imgArvore, imgParabens, imgNuvem;
-let plataformas = [];
 let larguraPlat = 1536;
 let alturaPlat = 198;
 let cameraX = 0;
+let plataformas = [];
 let npcs = [];
 let nuvens = [];
 let vidas = 3;
@@ -14,9 +16,10 @@ let tempoInvencivel = 0;
 let estadoJogo = "inicial";
 let jogoGanho = false;
 
+//Para controle de colisão
 let colFlor = false, colApicultor = false, colHomem = false, abelhaCaiu = false;
 
-// VARIÁVEIS PARA ANIMAÇÃO DA ABELHA NA TELA INICIAL
+// Para animação da abelha na tela inicial, usamos:
 let abelhaOffsetY = 0;
 let abelhaAngle = 0;
 
@@ -36,13 +39,13 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  inicializarJogo();
+  inicializarJogo(); //Configura os objetos do jogo
 }
 
 function inicializarJogo() {
   let topoPlat = height - imgPlat.height;
   jogoGanho = false;
-
+// Delimitamos valores fixos para a altura dos personagens porque quando o jogo recarrega, evitamos alguns problemas de mudança de altura
   let alturaFlor = 250;
   let alturaApi = 220;
   let alturaHomem = 220;
@@ -61,24 +64,17 @@ function inicializarJogo() {
   sol = new Sol(1100, 50, 300, 150, 150, imgSol);
   abelha = new Abelha(120, 100, 0.5, 0, 10, imgBel, topoPlat);
   
-  // CRIANDO NUVENS PARA O JOGO - MAIORES E EM POSIÇÕES DIFERENTES
+  // Criamos nuvens com posições diferentes:
+  
   nuvens = [];
   
-  // 4 nuvens em posições e tamanhos variados - TAMANHOS AUMENTADOS
-  // NUVEM 1: Antes do sol, alta e média
-  nuvens.push(new Nuvem(700, 40, 0.15, imgNuvem, 0.8)); // Aumentado de 0.07 para 0.15
-  
-  // NUVEM 2: Perto do sol, baixa e grande
-  nuvens.push(new Nuvem(900, 90, 0.18, imgNuvem, 0.7)); // Aumentado de 0.09 para 0.18
-  
-  // NUVEM 3: Depois do sol, média e média
-  nuvens.push(new Nuvem(1300, 60, 0.16, imgNuvem, 1.0)); // Aumentado de 0.08 para 0.16
-  
-  // NUVEM 4: Longe do sol, alta e pequena
-  nuvens.push(new Nuvem(1600, 30, 0.12, imgNuvem, 1.2)); // Aumentado de 0.06 para 0.12
-  
-  // NUVEM 5: Muito alta e pequena
-  nuvens.push(new Nuvem(1900, 20, 0.10, imgNuvem, 1.1)); // Aumentado de 0.05 para 0.10
+  nuvens.push(new Nuvem(700, 40, 0.15, imgNuvem, 0.8)); 
+  nuvens.push(new Nuvem(900, 90, 0.18, imgNuvem, 0.7)); 
+  nuvens.push(new Nuvem(1300, 60, 0.16, imgNuvem, 1.0)); 
+  nuvens.push(new Nuvem(1600, 30, 0.12, imgNuvem, 1.2)); 
+  nuvens.push(new Nuvem(1900, 20, 0.10, imgNuvem, 1.1)); 
+
+  //Criação dos NPCs com posições diferentes no mundo
 
   npcs = [
     florInimigo,
@@ -107,6 +103,7 @@ function inicializarJogo() {
 function draw() {
   background("rgba(123, 204, 255, 1)");
 
+  // Verificação do estado atual do jogo e redirecionamento para tela correspondente
   if (estadoJogo === "inicial") {
     telaInicial();
     return;
@@ -118,36 +115,38 @@ function draw() {
     return;
   }
 
-  // JOGO EM ANDAMENTO
+  // Com o jogo em andamento, temos:
+  // Colocamos um efeito onde o sol se move mais devagar que o mundo
   sol.x -= velocidadeMundo * 0.2;
   sol.mostrar();
   
-  // DESENHAR E MOVER NUVENS
+  // Desenho das nuvens:
   for (let i = nuvens.length - 1; i >= 0; i--) {
     let nuvem = nuvens[i];
-    nuvem.x -= nuvem.velocidade;
+    nuvem.x -= nuvem.velocidade; //Movimentação conforme velocidade
     nuvem.mostrar();
-    
+
+    //Caso a nuvem saia da tela pela esquerda, a nuvem é reposicionada na direita
     if (nuvem.x + nuvem.largura < -100) {
-      // Reposiciona à direita com posições variadas
+      
       nuvem.x = width + random(300, 800);
       
-      // Alturas variadas: algumas altas, algumas baixas
+      // Altura aleatoria
       if (random() > 0.5) {
-        nuvem.y = random(20, 50); // Nuvens altas
+        nuvem.y = random(20, 50); 
       } else {
-        nuvem.y = random(60, 100); // Nuvens baixas
+        nuvem.y = random(60, 100); 
       }
       
-      // Tamanhos variados: AUMENTADO (0.10 a 0.25)
-      nuvem.tamanho = random(0.10, 0.25); // Aumentado de (0.05, 0.10) para (0.10, 0.25)
-      
-      // IMPORTANTE: Atualizar largura e altura com o novo tamanho
+      // Tamanho aleatorio e atualização da largura e altura
+      nuvem.tamanho = random(0.10, 0.25); 
       nuvem.largura = imgNuvem.width * nuvem.tamanho;
       nuvem.altura = imgNuvem.height * nuvem.tamanho;
     }
   }
 
+
+//Gravidade e movimento vertical
   abelha.moverVertical();
   abelhaCaiu = abelha.caiu();
 
@@ -155,25 +154,32 @@ function draw() {
     vidas = 0;
   }
 
+
+
+  //Movimentação e desenho de plataformas
   for (let plat of plataformas) {
-    plat.x -= velocidadeMundo;
+    plat.x -= velocidadeMundo; //para esquerda
     if (plat.x + plat.largura < 0) {
       plat.x += larguraPlat * plataformas.length;
-    }
+    } //reposicionamento
     plat.mostrar();
   }
 
+  //Movimentação e desenho dos NPCs
   for (let i = npcs.length - 1; i >= 0; i--) {
     let npc = npcs[i];
     npc.x -= velocidadeMundo;
     npc.mostrar();
 
+    //Se tiver colisão com a arvore, o jogador venceu o jogo 
     if (npc === arvore && abelha.colidiu(npc)) {
       jogoGanho = true;
       estadoJogo = "vitoria";
       return;
     }
     
+    //Verificação da colisão da abelha com os inimigos:
+    //comentei ate aq
     if (!jogoGanho && abelha.colidiu(npc) && !invencivel && npc !== arvore) {
       vidas--;
       invencivel = true;
