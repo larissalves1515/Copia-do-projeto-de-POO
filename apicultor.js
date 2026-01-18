@@ -13,14 +13,13 @@ class Apicultor extends Base {
   mostrar() {
     image(this.img, this.x - 15, this.y + 25, this.larguraDesejada, this.alturaDesejada);
 
-    // ===== HITBOX AJUSTADA =====
     const margemX = 45;
     const margemY = 30;
 
     const hitboxX = this.x - 15 + margemX / 2;
-    const hitboxY = this.y + 25 + margemY / 2 - 8; // sobe
+    const hitboxY = this.y + 25 + margemY / 2 - 8; 
     const hitboxW = this.larguraDesejada - margemX;
-    const hitboxH = this.alturaDesejada - margemY + 12; // mais alto
+    const hitboxH = this.alturaDesejada - margemY + 12; 
 
     // // Debug
     // noFill();

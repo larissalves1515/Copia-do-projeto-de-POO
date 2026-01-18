@@ -1,7 +1,5 @@
-// nuvem.js - VERSÃO CORRIGIDA
 class Nuvem extends Base {
   constructor(x, y, tamanho, img, velocidade) {
-    // IMPORTANTE: Multiplicar pelo tamanho para ficar pequeno
     const largura = img.width * tamanho;
     const altura = img.height * tamanho;
     
@@ -13,7 +11,6 @@ class Nuvem extends Base {
   }
 
   mostrar() {
-    // Desenha SEM redimensionar a imagem original
     image(this.img, this.x, this.y, this.largura, this.altura);
   }
 }

@@ -2,7 +2,6 @@ class Flor extends Base {
   constructor(x, y, altura, largura, img, vel) {
     super(x, y, altura, largura, img);
     this.vel = vel;
-    // Não redimensionamos aqui - fazemos no mostrar()
     this.alturaDesejada = altura;
     this.larguraDesejada = largura;
   }
@@ -14,9 +13,9 @@ class Flor extends Base {
 
   image(this.img, imgX, imgY, this.larguraDesejada, this.alturaDesejada);
 
-  // ===== AJUSTE FINO DA HITBOX =====
+ 
    const margemX = 60;
-   const margemY = 25; // um pouco menor → mais altura total
+   const margemY = 25; 
 
   const hitboxX = this.x - 15 + margemX / 2;
   const hitboxY = this.y + 25 + margemY / 2 - 8; 
@@ -29,12 +28,10 @@ class Flor extends Base {
   // stroke("red");
   // rect(hitboxX, hitboxY, hitboxW, hitboxH);
 
-  // ===== HITBOX REAL =====
   this.hitboxOffsetX = hitboxX - this.x;
   this.hitboxOffsetY = hitboxY - this.y;
   this.hitboxWidth = hitboxW;
   this.hitboxHeight = hitboxH;
 }
-
 
 }

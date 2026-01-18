@@ -5,7 +5,6 @@ let abelha, florInimigo, apicultor, homem, sol, arvore;
 let imgBel, imgFlor, imgApi, imgHomem, imgSol, imgPlat, imgGameOver, imgTelaInicial, imgArvore, imgParabens, imgNuvem;
 let larguraPlat = 1536;
 let alturaPlat = 198;
-let cameraX = 0;
 let plataformas = [];
 let npcs = [];
 let nuvens = [];
@@ -168,7 +167,7 @@ function draw() {
   //Movimentação e desenho dos NPCs
   for (let i = npcs.length - 1; i >= 0; i--) {
     let npc = npcs[i];
-    npc.x -= velocidadeMundo;
+    npc.x -= velocidadeMundo; //movimentação para esquerda
     npc.mostrar();
 
     //Se tiver colisão com a arvore, o jogador venceu o jogo 
@@ -179,54 +178,64 @@ function draw() {
     }
     
     //Verificação da colisão da abelha com os inimigos:
-    //comentei ate aq
+    
     if (!jogoGanho && abelha.colidiu(npc) && !invencivel && npc !== arvore) {
-      vidas--;
-      invencivel = true;
+      vidas--; //remoção de uma vida
+      invencivel = true; //abelha tem a invencibilidade porque o jogo continua
       tempoInvencivel = frameCount;
-      npcs.splice(i, 1);
+      npcs.splice(i, 1); //remoção do npc
     }
   }
 
+
+  //Desativação da invencibilidade
   if (invencivel && frameCount - tempoInvencivel > 60) {
     invencivel = false;
   }
 
   abelha.mostrar();
   
+  //Desenho dos corações que equivalem as vidas da abelha
   for (let i = 0; i < maxVidas; i++) {
-    let cheio = i < vidas;
+    let cheio = i < vidas; //se a vida está cheia ou vazia
     desenharCoracao(40, 50 + i * 50, 0.6, cheio);
   }
   
+  //Verificação de derrota (se as vidas acabaram)
   if (vidas <= 0 && !jogoGanho) {
     estadoJogo = "gameover";
   }
 }
 
-// ==================== TELA DE VITÓRIA ATUALIZADA ====================
+
 function telaVitoria() {
   background("rgba(123, 204, 255, 1)");
   desenharNuvensVitoria();
   imageMode(CENTER);
   textAlign(CENTER, CENTER);
-  
+
+  //Calculos do tamanho das imagens:
   let abelhaWidth = imgBel.width * 0.2;
   let abelhaHeight = imgBel.height * 0.2;
   let arvoreWidth = imgArvore.width * 0.22;
   let arvoreHeight = imgArvore.height * 0.22;
   
+  //Posicionamentos:
   let centroX = width / 2;
   let arvoreY = height / 2 - 130;
   
   let espacamento = 20;
   let abelhaX = centroX - arvoreWidth/2 - abelhaWidth/2 - espacamento;
-  let abelhaY = arvoreY + sin(frameCount * 0.05) * 8 + 15;
-  
+  let abelhaY = arvoreY + sin(frameCount * 0.05) * 8 + 15; /*esse efeito de voo é feito de acordo com o seno 
+  (retornando entre -1 e 1) dos frames vezes a velocidade de oscilação, e depois multiplicado pela amplitude 
+  do movimento, e somando com um deslocamento fixo.
+  */
+
   image(imgBel, abelhaX, abelhaY, abelhaWidth, abelhaHeight);
   image(imgArvore, centroX, arvoreY, arvoreWidth, arvoreHeight);
-  
-  if (imgParabens) {
+
+  //Desenho da imagem de parabéns e o textinho debaixo (2 opções, com imagem ou sem)
+  if (imgParabens) { 
     let parabensWidth = imgParabens.width * 0.25;
     let parabensHeight = imgParabens.height * 0.25;
     let parabensY = arvoreY + arvoreHeight/2 + 50;
@@ -251,22 +260,23 @@ function telaVitoria() {
 }
 
 function drawBotaoJogarNovamente() {
-  let btnX = width / 2;
+  let btnX = width / 2; //btn --> button
   let btnY = height * 0.88;
   let btnWidth = 220;
   let btnHeight = 50;
   
+  //Verificação de o mouse está sobre o botão
   let mouseOver = mouseX > btnX - btnWidth/2 && 
                   mouseX < btnX + btnWidth/2 && 
                   mouseY > btnY - btnHeight/2 && 
                   mouseY < btnY + btnHeight/2;
-  
+  //Botão e o efeito
   fill(mouseOver ? color(255, 215, 0) : color(255, 165, 0));
   stroke(255);
   strokeWeight(2);
   rectMode(CENTER);
   rect(btnX, btnY, btnWidth, btnHeight, 12);
-  
+  //Texto do botão
   fill(255);
   noStroke();
   textSize(18);
@@ -275,18 +285,21 @@ function drawBotaoJogarNovamente() {
   rectMode(CORNER);
 }
 
-// ==================== TELA INICIAL ====================
+
 function telaInicial() {
   background("rgba(123, 204, 255, 1)");
   desenharNuvensInicio();
   imageMode(CENTER);
   
+  //Cálculo de deslocamento da abelha (oscilação de 8 pixels pra cima e 8 pixels pra baixo)
   abelhaOffsetY = sin(abelhaAngle) * 8;
-  abelhaAngle += 0.05;
+  abelhaAngle += 0.05; //rapidez da oscilação
   
+  //Tamanho da imagem principal
   let imgWidth = imgTelaInicial.width * 0.35;
   let imgHeight = imgTelaInicial.height * 0.35;
   
+  //Redimensionamento da imagem para a proporção da tela
   if (imgWidth > width * 0.5) {
     let ratio = (width * 0.5) / imgWidth;
     imgWidth *= ratio;
@@ -295,22 +308,23 @@ function telaInicial() {
   
   let imgPrincipalX = width / 2;
   let imgPrincipalY = height / 2 - 80;
-  
   image(imgTelaInicial, imgPrincipalX, imgPrincipalY, imgWidth, imgHeight);
   
+  //Animação e posicionamento da abelha
   let abelhaSize = 0.35;
   let abelhaWidth = imgBel.width * abelhaSize;
   let abelhaHeight = imgBel.height * abelhaSize;
   
   let abelhaX = imgPrincipalX - imgWidth/2 - abelhaWidth/2 - 25;
   let abelhaY = imgPrincipalY + abelhaOffsetY;
-  
+
+  //Adicionamos essa rotação oscilante para a abelha
   push();
   translate(abelhaX + abelhaWidth/2, abelhaY + abelhaHeight/2);
   rotate(sin(abelhaAngle * 0.5) * 0.08);
   image(imgBel, -abelhaWidth/2, -abelhaHeight/2, abelhaWidth, abelhaHeight);
   pop();
-  
+
   drawBotaoIniciarPequeno();
   drawInstrucoesPequeno();
   imageMode(CORNER);
@@ -321,12 +335,12 @@ function drawBotaoIniciarPequeno() {
   let btnY = height * 0.75;
   let btnWidth = 220;
   let btnHeight = 55;
-  
+  //Verificação do mouse
   let mouseOver = mouseX > btnX - btnWidth/2 && 
                   mouseX < btnX + btnWidth/2 && 
                   mouseY > btnY - btnHeight/2 && 
                   mouseY < btnY + btnHeight/2;
-  
+  //Desenho do botão e do texto
   fill(mouseOver ? color(50, 205, 50) : color(34, 139, 34));
   stroke(255);
   strokeWeight(2);
@@ -342,27 +356,26 @@ function drawBotaoIniciarPequeno() {
   rectMode(CORNER);
 }
 
-function drawInstrucoesPequeno() {
+function drawInstrucoesPequeno() {  //instruções:
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
   textSize(18);
-  
+ 
   text("CONTROLES:", width / 2, height * 0.85);
   textSize(16);
   text("SETA PARA CIMA: Voar/Pular", width / 2, height * 0.89);
   text("Desvie dos obstáculos e sobreviva!", width / 2, height * 0.93);
 }
 
-// ==================== TELA GAME OVER ====================
 function telaGameOver() {
   background("rgba(123, 204, 255, 1)");
   desenharNuvensGameOver();
   imageMode(CENTER);
-  
+  //Tamanho da imagem
   let imgWidth = imgGameOver.width * 0.4;
   let imgHeight = imgGameOver.height * 0.4;
-  
+  //Redimensionamento
   if (imgWidth > width * 0.8) {
     let ratio = (width * 0.8) / imgWidth;
     imgWidth *= ratio;
@@ -374,7 +387,7 @@ function telaGameOver() {
   imageMode(CORNER);
 }
 
-function drawBotaoReiniciar() {
+function drawBotaoReiniciar() { //calculos também como nos outros botões
   let btnX = width / 2;
   let btnY = height * 0.85;
   let btnWidth = 200;
@@ -384,13 +397,13 @@ function drawBotaoReiniciar() {
                   mouseX < btnX + btnWidth/2 && 
                   mouseY > btnY - btnHeight/2 && 
                   mouseY < btnY + btnHeight/2;
-  
+  //Botão
   fill(mouseOver ? color(255, 200, 0) : color(255, 165, 0));
   stroke(255);
   strokeWeight(2);
   rectMode(CENTER);
   rect(btnX, btnY, btnWidth, btnHeight, 10);
-  
+  //Texto
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
@@ -400,73 +413,60 @@ function drawBotaoReiniciar() {
   rectMode(CORNER);
 }
 
-// ==================== FUNÇÕES PARA NUVENS NAS TELAS ====================
 function desenharNuvensInicio() {
-  if (!imgNuvem) return;
+  if (!imgNuvem) return; //verifica o carregamento da imagem
   
   imageMode(CORNER);
   
-  // Nuvens nas telas mantêm o tamanho ORIGINAL
+  //Como temos um numero delimitado de nuvens, optamos por delimitar tambem os tamanhos
   let nuvemSize1 = 0.15;
   let nuvemSize2 = 0.2;
   let nuvemSize3 = 0.18;
   let nuvemSize4 = 0.12;
-  let nuvemSize5 = 0.16; // NOVA NUVEM - tamanho médio
+  let nuvemSize5 = 0.16; 
   
-  // Nuvem 1 - Canto superior esquerdo
+  //Desenho em posições diferentes
   image(imgNuvem, width * 0.05, height * 0.1, 
         imgNuvem.width * nuvemSize1, imgNuvem.height * nuvemSize1);
   
-  // Nuvem 2 - Meio superior
   image(imgNuvem, width * 0.3, height * 0.15, 
         imgNuvem.width * nuvemSize2, imgNuvem.height * nuvemSize2);
-  
-  // Nuvem 3 - Canto superior direito
+
   image(imgNuvem, width * 0.7, height * 0.2, 
         imgNuvem.width * nuvemSize3, imgNuvem.height * nuvemSize3);
   
-  // Nuvem 4 - Lado esquerdo, abaixo da área principal
   image(imgNuvem, width * 0.15, height * 0.6, 
         imgNuvem.width * nuvemSize4, imgNuvem.height * nuvemSize4);
   
-  // NOVA NUVEM 5 - Canto inferior direito, perto dos elementos
-  // Posicionada abaixo do botão "INICIAR JOGO" e à direita das instruções
-  let novaNuvemX = width * 0.85; // 85% da largura (canto direito)
-  let novaNuvemY = height * 0.8; // 80% da altura (abaixo do botão)
-  
-  image(imgNuvem, novaNuvemX, novaNuvemY, 
+  image(imgNuvem, width * 0.85,  height * 0.8, 
         imgNuvem.width * nuvemSize5, imgNuvem.height * nuvemSize5);
 }
 
 function desenharNuvensVitoria() {
-  if (!imgNuvem) return;
+  if (!imgNuvem) return; //verifica o carregamento
   
   imageMode(CORNER);
-  
+  //Optamos por seguir o mesmo modelo das nuvens da tela inicial, só mudando alguns valores
   let nuvemSize1 = 0.18;
   let nuvemSize2 = 0.15;
   let nuvemSize3 = 0.22;
   let nuvemSize4 = 0.14;
   
-  // Nuvem 1 - Canto superior esquerdo (longe da abelha)
   image(imgNuvem, width * 0.02, height * 0.05, 
         imgNuvem.width * nuvemSize1, imgNuvem.height * nuvemSize1);
   
-  // Nuvem 2 - Meio superior direito (acima da árvore)
   image(imgNuvem, width * 0.75, height * 0.08, 
         imgNuvem.width * nuvemSize2, imgNuvem.height * nuvemSize2);
   
-  // Nuvem 3 - Lado direito (abaixo do botão)
   image(imgNuvem, width * 0.82, height * 0.7, 
         imgNuvem.width * nuvemSize3, imgNuvem.height * nuvemSize3);
   
-  // Nuvem 4 - Canto inferior esquerdo (abaixo do texto)
   image(imgNuvem, width * 0.05, height * 0.75, 
         imgNuvem.width * nuvemSize4, imgNuvem.height * nuvemSize4);
 }
 
 function desenharNuvensGameOver() {
-  if (!imgNuvem) return;
+  if (!imgNuvem) return; //Verificação de carregamento
   
   imageMode(CORNER);
   
@@ -475,31 +475,29 @@ function desenharNuvensGameOver() {
   let nuvemSize3 = 0.18;
   let nuvemSize4 = 0.14;
   
-  // Nuvem 1 - Canto superior esquerdo
+  //Também optamos pelo mesmo modelo
   image(imgNuvem, width * 0.08, height * 0.1, 
         imgNuvem.width * nuvemSize1, imgNuvem.height * nuvemSize1);
   
-  // Nuvem 2 - Acima da imagem de game over
   image(imgNuvem, width * 0.35, height * 0.05, 
         imgNuvem.width * nuvemSize2, imgNuvem.height * nuvemSize2);
   
-  // Nuvem 3 - Canto superior direito
   image(imgNuvem, width * 0.78, height * 0.15, 
         imgNuvem.width * nuvemSize3, imgNuvem.height * nuvemSize3);
   
-  // Nuvem 4 - Lado esquerdo (abaixo do botão)
   image(imgNuvem, width * 0.1, height * 0.7, 
         imgNuvem.width * nuvemSize4, imgNuvem.height * nuvemSize4);
 }
 
-// ==================== CONTROLE DE CLIQUE DO MOUSE ====================
-function mousePressed() {
+
+function mousePressed() { //controle dos cliques do mouse
   if (estadoJogo === "inicial") {
     let btnX = width / 2;
     let btnY = height * 0.75;
     let btnWidth = 220;
     let btnHeight = 55;
     
+    //Verificação se o clique foi no botão "Iniciar Jogo"
     if (mouseX > btnX - btnWidth/2 && 
         mouseX < btnX + btnWidth/2 && 
         mouseY > btnY - btnHeight/2 && 
@@ -511,7 +509,8 @@ function mousePressed() {
     let btnY = height * 0.85;
     let btnWidth = 200;
     let btnHeight = 50;
-    
+
+    //Verificação se o clique foi no botão "Jogar novamente"
     if (mouseX > btnX - btnWidth/2 && 
         mouseX < btnX + btnWidth/2 && 
         mouseY > btnY - btnHeight/2 && 
@@ -524,6 +523,7 @@ function mousePressed() {
     let btnWidth = 220;
     let btnHeight = 50;
     
+    //Verificação se o clique foi no botão "Jogar novamente"
     if (mouseX > btnX - btnWidth/2 && 
         mouseX < btnX + btnWidth/2 && 
         mouseY > btnY - btnHeight/2 && 
@@ -533,7 +533,7 @@ function mousePressed() {
   }
 }
 
-function reiniciarJogo() {
+function reiniciarJogo() { //basicamente reseta todas as variáveis do jogo
   vidas = 3;
   estadoJogo = "jogando";
   invencivel = false;
@@ -544,7 +544,9 @@ function reiniciarJogo() {
   inicializarJogo();
 }
 
-function desenharCoracao(x, y, tamanho, cheio) {
+function desenharCoracao(x, y, tamanho, cheio) { 
+  //Desenha o coração de acordo com posição, escala e sem contorno.
+  //E também define a aparencia de acordo com o estado (cheio ou vazio)
   push();
   translate(x, y);
   scale(tamanho);
@@ -558,7 +560,7 @@ function desenharCoracao(x, y, tamanho, cheio) {
     strokeWeight(3);
   }
 
-  beginShape();
+  beginShape(); //inicia o desenho personalizado do coração
   vertex(0, 0);
   bezierVertex(-20, -20, -40, 10, 0, 40);
   bezierVertex(40, 10, 20, -20, 0, 0);
@@ -567,7 +569,7 @@ function desenharCoracao(x, y, tamanho, cheio) {
   pop();
 }
 
-function keyPressed() {
+function keyPressed() { //controla o movimento de pulo da abelha com a tecla de seta pra cima
   if (estadoJogo === "jogando" && keyCode === UP_ARROW) {
     abelha.pular();
   }

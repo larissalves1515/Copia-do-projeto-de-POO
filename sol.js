@@ -12,8 +12,7 @@ class Sol extends Base {
     // Efeito de brilho
     drawingContext.shadowBlur = 15;
     drawingContext.shadowColor = "yellow";
-    
-    // Desenha o sol no tamanho desejado
+   
     image(this.img, this.x - 15, this.y, this.larguraDesejada, this.alturaDesejada);
     
     pop();
