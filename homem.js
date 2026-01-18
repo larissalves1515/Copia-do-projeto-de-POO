@@ -8,11 +8,14 @@ class Homem extends Base {
   }
 
   mostrar() {
+    
+    // Posição real da imagem na tela
     const imgX = this.x - 15;
     const imgY = this.y + 25;
 
     image(this.img, imgX, imgY, this.larguraDesejada, this.alturaDesejada);
 
+    // Margens para reduzir o hitbox
     const margemX = this.larguraDesejada * 0.32; 
     const margemY = this.alturaDesejada * 0.18; 
 
@@ -26,7 +29,7 @@ class Homem extends Base {
     // stroke("red");
     // rect(hitboxX, hitboxY, hitboxW, hitboxH);
 
-    
+    //hitbox real usado na colisão
     this.hitboxOffsetX = hitboxX - this.x;
     this.hitboxOffsetY = hitboxY - this.y;
     this.hitboxWidth = hitboxW;

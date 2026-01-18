@@ -1,10 +1,12 @@
 class Abelha extends Base {
   constructor(x, y, tamanho, velX, velY, img, topoPlat) {
+     // aqui serve pra calcular o tamanho real da imagem
     const largura = img.width * tamanho;
     const altura  = img.height * tamanho;
 
     super(x, y, altura, largura, img);
 
+    // Atributos básicos
     this.tamanho = tamanho;
     this.velX = velX;
     this.velY = velY;
@@ -15,6 +17,8 @@ class Abelha extends Base {
     // limite máximo que a abelha pode descer (acima da plataforma)
     this.limiteVooInferior = this.topoPlat - this.altura * 0.32;
 
+    
+    // Configuração da hitbox
     this.hitboxOffsetX = largura * 0.14;
     this.hitboxOffsetY = altura * 0.30;
     this.hitboxWidth  = largura * 0.7;
@@ -43,6 +47,7 @@ moverVertical() {
     this.y = 0;
     this.velY = 0;
   }
+   // aqui impedimos de descer além do limite
   if (this.y > this.limiteVooInferior) {
     this.y = this.limiteVooInferior;
     this.velY = 0;
@@ -54,16 +59,19 @@ pular() {
 }
 
 colidiu(npc) {
+  //hitbox da abelha
   const ax = this.x + this.hitboxOffsetX;
   const ay = this.y + this.hitboxOffsetY;
   const aw = this.hitboxWidth;
   const ah = this.hitboxHeight;
 
+  //hitbox do npc
   const bx = npc.x + (npc.hitboxOffsetX || 0);
   const by = npc.y + (npc.hitboxOffsetY || 0);
   const bw = npc.hitboxWidth  || npc.largura;
   const bh = npc.hitboxHeight || npc.altura;
 
+  //caixa de colisão alinhada aos eixos (AABB), ou seja, o calculo da colisão a partir dos eixos x e y
   return (
     ax < bx + bw &&
     ax + aw > bx &&
@@ -74,6 +82,7 @@ colidiu(npc) {
 
 
 caiu() {
+  //verifica se a abelha caiu fora da tela, ou seja, ultrapassou o limite inferior
   return this.y > height;
 }
 }

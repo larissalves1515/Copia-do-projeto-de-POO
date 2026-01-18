@@ -9,7 +9,7 @@ class Arvore extends Base {
 mostrar() {
   image(this.img, this.x, this.y, this.larguraDesejada, this.alturaDesejada);
 
-
+  // Margens para reduzir o hitbox
   const margemX = this.larguraDesejada * 0.6;
   const margemY = this.alturaDesejada * 0.18; 
 
@@ -23,6 +23,7 @@ mostrar() {
   // strokeWeight(2);
   // rect(hitboxX, hitboxY, hitboxW, hitboxH);
 
+  // Hitbox real usado na colisão
   this.hitboxOffsetX = margemX / 2;
   this.hitboxOffsetY = margemY;
   this.hitboxWidth = hitboxW;

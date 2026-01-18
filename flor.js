@@ -13,7 +13,7 @@ class Flor extends Base {
 
   image(this.img, imgX, imgY, this.larguraDesejada, this.alturaDesejada);
 
- 
+  // Margens para reduzir o hitbox
    const margemX = 60;
    const margemY = 25; 
 
@@ -28,6 +28,8 @@ class Flor extends Base {
   // stroke("red");
   // rect(hitboxX, hitboxY, hitboxW, hitboxH);
 
+  
+    // Hitbox real usado na colisão
   this.hitboxOffsetX = hitboxX - this.x;
   this.hitboxOffsetY = hitboxY - this.y;
   this.hitboxWidth = hitboxW;
