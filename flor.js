@@ -1,4 +1,4 @@
-class Flor extends Base {
+class Flor extends Base { //herda de base
   constructor(x, y, altura, largura, img, vel) {
     super(x, y, altura, largura, img);
     this.vel = vel;
@@ -21,15 +21,8 @@ class Flor extends Base {
   const hitboxY = this.y + 25 + margemY / 2 - 8; 
   const hitboxW = this.larguraDesejada - margemX;
   const hitboxH = this.alturaDesejada - margemY + 10; 
-
-
-  // Debug visual
-  // noFill();
-  // stroke("red");
-  // rect(hitboxX, hitboxY, hitboxW, hitboxH);
-
   
-    // Hitbox real usado na colisão
+    //Configuracao da hitbox
   this.hitboxOffsetX = hitboxX - this.x;
   this.hitboxOffsetY = hitboxY - this.y;
   this.hitboxWidth = hitboxW;

@@ -1,4 +1,4 @@
-class Apicultor extends Base {
+class Apicultor extends Base { //herda de base
   constructor(x, y, tamanho, altura, largura, vel, img) {
     super(x, y, altura, largura, img);
     this.tamanho = tamanho;
@@ -9,7 +9,6 @@ class Apicultor extends Base {
     this.larguraDesejada = largura;
   }
 
-
   mostrar() {
     image(this.img, this.x - 15, this.y + 25, this.larguraDesejada, this.alturaDesejada);
 
@@ -18,19 +17,14 @@ class Apicultor extends Base {
     const margemX = 45;
     const margemY = 30;
 
-    //posição-hitbox
+    //Posição-hitbox
     const hitboxX = this.x - 15 + margemX / 2;
     const hitboxY = this.y + 25 + margemY / 2 - 8;
-    //tamanho-hitbox
+    //Tamanho-hitbox
     const hitboxW = this.larguraDesejada - margemX;
     const hitboxH = this.alturaDesejada - margemY + 12; 
 
-    // // Debug
-    // noFill();
-    // stroke("red");
-    // rect(hitboxX, hitboxY, hitboxW, hitboxH);
-
-    // Hitbox real usado na colisão
+    // Configuração da hitbox
     this.hitboxOffsetX = hitboxX - this.x;
     this.hitboxOffsetY = hitboxY - this.y;
     this.hitboxWidth = hitboxW;

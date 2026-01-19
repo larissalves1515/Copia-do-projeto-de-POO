@@ -1,4 +1,4 @@
-class Base {
+class Base { //classe que serve de base para as outras, pois tem funcionalidades fundamentais para os objetos do jogo
   constructor(x, y, altura, largura, img) {
     this.x = x;
     this.y = y;
@@ -12,9 +12,4 @@ class Base {
     image(this.img, this.x, this.y, this.largura, this.altura);
   }
 
-  mostrarHitbox(cor = "red") {
-    noFill();
-    stroke(cor);
-    rect(this.x, this.y, this.largura, this.altura);
-  }
 }

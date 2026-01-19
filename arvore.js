@@ -1,4 +1,4 @@
-class Arvore extends Base {
+class Arvore extends Base { //herda de Base
   constructor(x, y, tamanho, altura, largura, img) {
     super(x, y, altura, largura, img);
     this.tamanho = tamanho;
@@ -18,12 +18,8 @@ mostrar() {
   const hitboxW = this.larguraDesejada - margemX;
   const hitboxH = this.alturaDesejada - margemY * 1.05;
 
-  // noFill();
-  // stroke("green");
-  // strokeWeight(2);
-  // rect(hitboxX, hitboxY, hitboxW, hitboxH);
 
-  // Hitbox real usado na colisão
+  // Configuração da caixa de colisao
   this.hitboxOffsetX = margemX / 2;
   this.hitboxOffsetY = margemY;
   this.hitboxWidth = hitboxW;

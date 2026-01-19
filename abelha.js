@@ -1,4 +1,4 @@
-class Abelha extends Base {
+class Abelha extends Base { //herda de base
   constructor(x, y, tamanho, velX, velY, img, topoPlat) {
      // aqui serve pra calcular o tamanho real da imagem
     const largura = img.width * tamanho;
@@ -27,9 +27,7 @@ class Abelha extends Base {
 
   mostrar() {
     image(this.img, this.x, this.y, this.largura, this.altura);
-    // noFill();
-    // stroke("red");
-    // rect(this.x + this.hitboxOffsetX, this.y + this.hitboxOffsetY, this.hitboxWidth, this.hitboxHeight);
+
    }
 
 

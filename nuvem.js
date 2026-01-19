@@ -1,4 +1,4 @@
-class Nuvem extends Base {
+class Nuvem extends Base { //herda de base
   constructor(x, y, tamanho, img, velocidade) {
     const largura = img.width * tamanho;
     const altura = img.height * tamanho;
@@ -6,8 +6,7 @@ class Nuvem extends Base {
     super(x, y, altura, largura, img);
     this.tamanho = tamanho;
     this.velocidade = velocidade;
-    
-    console.log(`NUVEM: tamanho=${tamanho}, largura=${largura.toFixed(0)}px, altura=${altura.toFixed(0)}px`);
+   
   }
 
   mostrar() {

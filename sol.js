@@ -1,4 +1,4 @@
-class Sol extends Base {
+class Sol extends Base { //herda de base
   constructor(x, y, tamanho, altura, largura, img) {
     super(x, y, altura, largura, img);
     this.tamanho = tamanho;
