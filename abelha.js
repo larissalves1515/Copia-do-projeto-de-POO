@@ -14,7 +14,7 @@ class Abelha extends Base { //herda de base
   
 
     this.topoPlat = topoPlat;
-    // limite máximo que a abelha pode descer (acima da plataforma)
+    // limite máximo que a abelha pode descer 
     this.limiteVooInferior = this.topoPlat - this.altura * 0.32;
 
     
@@ -71,10 +71,10 @@ colidiu(npc) {
 
   //caixa de colisão alinhada aos eixos (AABB), ou seja, o calculo da colisão a partir dos eixos x e y
   return (
-    ax < bx + bw &&
-    ax + aw > bx &&
-    ay < by + bh &&
-    ay + ah > by
+    ax < bx + bw && 
+    ax + aw > bx && 
+    ay < by + bh && 
+    ay + ah > by    
   );
 }
 
